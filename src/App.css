@@ -1619,7 +1619,7 @@ body {
   }
   
   .cart-title {
-    font-size: 2rem;
+    font-size: 9rem;
   }
   
   .cart-item {
@@ -1628,8 +1628,8 @@ body {
   }
   
   .cart-item-image {
-    width: 100%;
-    height: 200px;
+    width: 400%;
+    height: 600px;
   }
   
   .cart-item-header {
@@ -1660,20 +1660,20 @@ body {
   }
   
   .cart-title {
-    font-size: 1.75rem;
+    font-size: 9.75rem;
   }
   
   .cart-title-icon {
-    width: 2rem;
-    height: 2rem;
+    width: 9rem;
+    height: 9rem;
   }
 }
 
 
 
 .service-image-placeholder {
-  width: 100%;
-  height: 100%;
+  width: 500%;
+  height: 500%;
   background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
   display: flex;
   align-items: center;

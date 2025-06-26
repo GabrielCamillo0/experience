@@ -1,0 +1,67 @@
+[
+    {
+        "id": "coco-key-water-resort",
+        "name": "CoCo Key Water Resort",
+        "name_en": "CoCo Key Water Resort",
+        "description": "Explore CoCo Key Water Resort em Orlando.",
+        "description_en": "Explore CoCo Key Water Resort in Orlando.",
+        "image": "/cocokey/1.webp",
+        "gallery": [
+          "/cocokey/1.webp",
+          "/cocokey/2.webp",
+          "/cocokey/3.webp",
+          "/cocokey/4.webp",
+          "/cocokey/5.webp",
+          "/cocokey/6.webp",
+          "/cocokey/7.webp",
+          "/cocokey/8.webp"
+        ],
+        "price": null,
+        "rating": 4.1,
+        "location": "7400 International Dr, Orlando, FL 32819",
+        "category": "Passeios",
+        "address": "7400 International Dr, Orlando, FL 32819",
+        "hours": "Diariamente, das 9h às 21h",
+        "phone": "(407) 351-2626",
+        "social": {
+          "instagram": "@cocokeyorlando",
+          "facebook": "CoCo Key Water Resort Orlando",
+          "website": "cocokeywaterresort.com"
+        },
+        "call_to_action": "Fechar Tour"
+      },
+    {
+        "id": "seaworld-orlando",
+        "name": "SeaWorld Orlando",
+        "name_en": "SeaWorld Orlando",
+        "description": "Explore SeaWorld Orlando em Orlando.",
+        "description_en": "Explore SeaWorld Orlando in Orlando.",
+        "image": "/seaworld/1.jpg",
+        "gallery": [
+          "/seaworld/1.jpg",
+          "/seaworld/2.jpg",
+          "/seaworld/3.jpg",
+          "/seaworld/4.jpg",
+          "/seaworld/5.jpg",
+          "/seaworld/6.jpg",
+          "/seaworld/7.jpg",
+          "/seaworld/8.jpg",
+          "/seaworld/9.jpg",
+          "/seaworld/10.jpg"
+        ],
+        "price": null,
+        "rating": 4.5,
+        "location": "7007 Sea World Dr, Orlando, FL 32821",
+        "category": "Passeios",
+        "address": "7007 Sea World Dr, Orlando, FL 32821",
+        "hours": "Diariamente, das 9h às 18h",
+        "phone": "(407) 545-5550",
+        "social": {
+          "instagram": "@seaworldorlando",
+          "facebook": "SeaWorld Orlando",
+          "website": "seaworld.com"
+        },
+        "call_to_action": "Fechar Tour"
+      }
+]
+

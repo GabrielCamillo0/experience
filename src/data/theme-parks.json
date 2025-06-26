@@ -1,0 +1,194 @@
+[
+    {
+        "id": "walt-disney-world-resort",
+        "name": "Walt Disney World Resort",
+        "name_en": "Walt Disney World Resort",
+        "description": "Explore Walt Disney World Resort em Orlando.",
+        "description_en": "Explore Walt Disney World Resort in Orlando.",
+        "image": "/waltdisneyworld/1.jpg",
+        "gallery": [
+          "/waltdisneyworld/1.jpg",
+                            "/waltdisneyworld/2.jpg",
+                            "/waltdisneyworld/3.jpg",
+                            "/waltdisneyworld/4.jpg",
+                            "/waltdisneyworld/5.jpg",
+                            "/waltdisneyworld/6.jpg",
+                            "/waltdisneyworld/7.jpg",
+                            "/waltdisneyworld/8.jpg"
+        ],
+        "price": null,
+        "rating": 4.8,
+        "location": "Orlando, FL 32830",
+        "category": "Passeios",
+        "address": "Orlando, FL 32830",
+        "hours": "Varia por parque",
+        "phone": "(407) 939-5277",
+        "social": {
+          "instagram": "@waltdisneyworld",
+          "facebook": "Walt Disney World",
+          "website": "disneyworld.disney.go.com"
+        },
+        "call_to_action": "Fechar Tour"
+      },
+      {
+        "id": "universal-orlando-resort",
+        "name": "Universal Orlando Resort",
+        "name_en": "Universal Orlando Resort",
+        "description": "Explore Universal Orlando Resort em Orlando.",
+        "description_en": "Explore Universal Orlando Resort in Orlando.",
+        "image": "/universal/1.jpg",
+        "gallery": [
+          "/universal/1.jpg",
+          "/universal/2.jpg",
+          "/universal/3.jpg",
+          "/universal/4.jpg",
+          "/universal/5.jpg",
+          "/universal/6.jpg",
+          "/universal/7.jpg",
+          "/universal/8.jpg",
+          "/universal/9.jpg",
+          "/universal/10.jpg",
+          "/universal/11.jpg"
+        ],
+        "price": null,
+        "rating": 4.7,
+        "location": "6000 Universal Blvd, Orlando, FL 32819",
+        "category": "Passeios",
+        "address": "6000 Universal Blvd, Orlando, FL 32819",
+        "hours": "Varia por parque",
+        "phone": "(407) 363-8000",
+        "social": {
+          "instagram": "@universalorlando",
+          "facebook": "Universal Orlando Resort",
+          "website": "universalorlando.com"
+        },
+        "call_to_action": "Fechar Tour"
+      },
+      {
+        "id": "seaworld-orlando",
+        "name": "SeaWorld Orlando",
+        "name_en": "SeaWorld Orlando",
+        "description": "Explore SeaWorld Orlando em Orlando.",
+        "description_en": "Explore SeaWorld Orlando in Orlando.",
+        "image": "/seaworld/1.jpg",
+        "gallery": [
+          "/seaworld/1.jpg",
+          "/seaworld/2.jpg",
+          "/seaworld/3.jpg",
+          "/seaworld/4.jpg",
+          "/seaworld/5.jpg",
+          "/seaworld/6.jpg",
+          "/seaworld/7.jpg",
+          "/seaworld/8.jpg",
+          "/seaworld/9.jpg",
+          "/seaworld/10.jpg"
+        ],
+        "price": null,
+        "rating": 4.5,
+        "location": "7007 Sea World Dr, Orlando, FL 32821",
+        "category": "Passeios",
+        "address": "7007 Sea World Dr, Orlando, FL 32821",
+        "hours": "Diariamente, das 9h às 18h",
+        "phone": "(407) 545-5550",
+        "social": {
+          "instagram": "@seaworldorlando",
+          "facebook": "SeaWorld Orlando",
+          "website": "seaworld.com"
+        },
+        "call_to_action": "Fechar Tour"
+      },
+      {
+        "id": "fun-spot-america",
+        "name": "Fun Spot America",
+        "name_en": "Fun Spot America",
+        "description": "Explore Fun Spot America em Orlando.",
+        "description_en": "Explore Fun Spot America in Orlando.",
+        "image": "/funspotamerica/1.jpg",
+        "gallery": [
+          "/funspotamerica/1.jpg",
+          "/funspotamerica/2.jpg",
+          "/funspotamerica/3.jpg",
+          "/funspotamerica/4.jpg",
+          "/funspotamerica/5.webp",
+          "/funspotamerica/6.jpg",
+          "/funspotamerica/7.jfif",
+          "/funspotamerica/8.jpg"
+        ],
+        "price": null,
+        "rating": 4.3,
+        "location": "5700 Fun Spot Way, Orlando, FL 32819",
+        "category": "Passeios",
+        "address": "5700 Fun Spot Way, Orlando, FL 32819",
+        "hours": "Diariamente, das 10h às 23h",
+        "phone": "(407) 363-3867",
+        "social": {
+          "instagram": "@funspotamerica",
+          "facebook": "Fun Spot America Orlando",
+          "website": "fun-spot.com"
+        },
+        "call_to_action": "Fechar Tour"
+      },
+      {
+        "id": "gatorland",
+        "name": "Gatorland",
+        "name_en": "Gatorland",
+        "description": "Explore Gatorland em Orlando.",
+        "description_en": "Explore Gatorland in Orlando.",
+        "image": "/gatorland/1.jpg",
+        "gallery": [
+          "/gatorland/1.jpg",
+          "/gatorland/2.jpg",
+          "/gatorland/3.jpg",
+          "/gatorland/4.jpg",
+          "/gatorland/5.jpg",
+          "/gatorland/6.jpg",
+          "/gatorland/7.jpg"
+        ],
+        "price": null,
+        "rating": 4.6,
+        "location": "14501 S Orange Blossom Trl, Orlando, FL 32837",
+        "category": "Passeios",
+        "address": "14501 S Orange Blossom Trl, Orlando, FL 32837",
+        "hours": "Diariamente, das 10h às 17h",
+        "phone": "(407) 855-5496",
+        "social": {
+          "instagram": "@gatorland",
+          "facebook": "Gatorland",
+          "website": "gatorland.com"
+        },
+        "call_to_action": "Fechar Tour"
+      },
+      {
+        "id": "icon-park",
+        "name": "ICON Park",
+        "name_en": "ICON Park",
+        "description": "Explore ICON Park em Orlando.",
+        "description_en": "Explore ICON Park in Orlando.",
+        "image": "/iconpark/1.jpg",
+        "gallery": [
+          "/iconpark/1.jpg",
+                            "/iconpark/2.jpg",
+                            "/iconpark/3.jpg",
+                            "/iconpark/4.jpg",
+                            "/iconpark/5.jpg",
+                            "/iconpark/6.jpg",
+                            "/iconpark/7.jpg",
+                            "/iconpark/8.jpg",
+                            "/iconpark/9.jpg"
+        ],
+        "price": null,
+        "rating": 4.4,
+        "location": "8401 International Dr, Orlando, FL 32819",
+        "category": "Passeios",
+        "address": "8401 International Dr, Orlando, FL 32819",
+        "hours": "Diariamente, das 10h às 22h",
+        "phone": "(407) 601-7907",
+        "social": {
+          "instagram": "@iconparkorlando",
+          "facebook": "ICON Park Orlando",
+          "website": "iconparkorlando.com"
+        },
+        "call_to_action": "Fechar Tour"
+      }
+]
+

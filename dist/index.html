@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Experience Florida - Tours, Restaurants & Car Rentals in Orlando</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/assets/manifest-Cxaf5mLv.json" />
+    
+    <!-- Meta tags for SEO and social sharing -->
+    <meta name="description" content="Your next adventure in Orlando starts here. Tours, restaurants, and car rentals with Experience Florida." />
+    <meta name="keywords" content="Orlando, tours, restaurants, Disney, Universal, SeaWorld, Florida, travel, vacation" />
+    <meta name="author" content="Experience Florida" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://experienceflorida.com/" />
+    <meta property="og:title" content="Experience Florida - Orlando Tours & Restaurants" />
+    <meta property="og:description" content="Your next adventure in Orlando starts here. Tours, restaurants, and car rentals." />
+    <meta property="og:image" content="/og-image.jpg" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://experienceflorida.com/" />
+    <meta property="twitter:title" content="Experience Florida - Orlando Tours & Restaurants" />
+    <meta property="twitter:description" content="Your next adventure in Orlando starts here. Tours, restaurants, and car rentals." />
+    <meta property="twitter:image" content="/og-image.jpg" />
+    
+    <!-- Apple PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Experience Florida" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    
+    <!-- Microsoft PWA -->
+    <meta name="msapplication-TileImage" content="/icon-192.png" />
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    
+    <!-- Theme colors -->
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="msapplication-navbutton-color" content="#2563eb" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#2563eb" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Analytics placeholder -->
+    <script>
+      // Google Analytics placeholder
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+    <script type="module" crossorigin src="/assets/index-C-Fyp80r.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C5-FPLLc.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>

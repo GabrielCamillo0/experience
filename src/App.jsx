@@ -847,29 +847,32 @@ function ItemCard({ item, addToCart }) {
       : []
 
   return (
-    <div className="modern-service-card border rounded-lg overflow-hidden shadow-sm">
+    <div className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm">
       {/* === CARROSSEL DE IMAGENS === */}
+      <div className="service-image-container"></div>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000 }}
         loop
-        className="h-48"
+        className="w-full h-full" 
       >
         {images.length > 0
           ? images.map((src, idx) => (
               <SwiperSlide key={idx}>
+                <div className="w-full h-48 overflow-hidden">
                 <img
                   src={src}
                   alt={`${name} ${idx + 1}`}
                   className="w-full h-48 object-cover rounded-lg"
                 />
+                </div>
               </SwiperSlide>
             ))
           : (
             <SwiperSlide>
-              <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                 <span className="text-4xl font-bold">{name.charAt(0)}</span>
               </div>
             </SwiperSlide>
@@ -878,7 +881,7 @@ function ItemCard({ item, addToCart }) {
       </Swiper>
 
       {/* === CONTEÚDO DO CARD === */}
-      <div className="service-content p-4 flex flex-col">
+      <div className="service-content flex-1 p-4 flex flex-col justify-between">
         <div className="flex justify-between items-center mb-2">
           <h3 className="service-title text-lg font-semibold">{name}</h3>
           <span className="service-rating bg-yellow-400 text-white px-2 rounded">

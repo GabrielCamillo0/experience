@@ -841,44 +841,50 @@ function ItemCard({ item, addToCart }) {
 
   // monta o array de imagens a partir de gallery ou image único
   const images = item.gallery?.length
-    ? item.gallery
-    : item.image
-      ? [item.image]
-      : []
+  ? item.gallery
+  : item.image
+    ? [item.image]
+    : [];
 
-  return (
-    <div className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm">
-      {/* === CARROSSEL DE IMAGENS === */}
-      <div className="service-image-container"></div>
-      <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        navigation
-        pagination={{ clickable: true }}
-        autoplay={{ delay: 3000 }}
-        loop
-        className="w-full h-full" 
-      >
-        {images.length > 0
-          ? images.map((src, idx) => (
-              <SwiperSlide key={idx}>
-                <div className="w-full h-48 overflow-hidden">
-                <img
-                  src={src}
-                  alt={`${name} ${idx + 1}`}
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                </div>
-              </SwiperSlide>
-            ))
-          : (
+return (
+  <div className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm">
+  {/* === CARROSSEL DE IMAGENS === */}
+  <div className="service-image-container">
+    <Swiper
+      modules={[Navigation, Pagination, Autoplay]}
+      navigation
+      pagination={{ clickable: true }}
+      autoplay={{ delay: 3000 }}
+      loop
+    >
+      {images.length > 0
+        ? images.map((src, idx) => (
+            <SwiperSlide key={idx}>
+              <img
+                src={src}
+                alt={`${name} ${idx + 1}`}
+                className="w-full h-full"
+              />
+            </SwiperSlide>
+          ))
+        : (
             <SwiperSlide>
               <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                 <span className="text-4xl font-bold">{name.charAt(0)}</span>
               </div>
             </SwiperSlide>
           )
-        }
-      </Swiper>
+      }
+    </Swiper>
+  
+
+    {/* === CONTEÚDO DO CARD === */}
+    <div className="service-content p-4 flex flex-col">
+      {/* ... resto do card ... */}
+    </div>
+  </div>
+
+
 
       {/* === CONTEÚDO DO CARD === */}
       <div className="service-content flex-1 p-4 flex flex-col justify-between">

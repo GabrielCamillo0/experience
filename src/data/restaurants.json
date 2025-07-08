@@ -286,7 +286,7 @@
         "/cafétututango/10.jpg",
         "/cafétututango/11.jpg",
         "/cafétututango/12.jpg"],
-        "price": null,
+        "price":50.00,
         "rating": 4.4,
         "location": "8625 International Dr, Orlando, FL 32819",
         "category": "Restaurantes",

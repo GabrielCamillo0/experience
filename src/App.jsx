@@ -6,6 +6,8 @@ import { Input } from "./components/ui/input";
 import { Badge } from "./components/ui/badge";
 import { Checkbox } from "./components/ui/checkbox";
 import { LanguageContext } from './LanguageContext'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
 import { ShoppingCart, Star, Search, MapPin, Clock, DollarSign, Users, Globe, Menu, X } from 'lucide-react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, Pagination, Autoplay } from 'swiper'
@@ -13,6 +15,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import './App.css'
+import CheckoutForm from './components/ui/CheckoutForm'
 
 // Import data
 import toursData from './data/tours.json'
@@ -22,6 +25,9 @@ import waterParksData from './data/water-parks.json'
 import foodDrinksData from './data/food-drinks.json'
 import nightlifeData from './data/nightlife.json'
 import beyondParksData from './data/beyond-parks.json'
+
+
+const stripePromise = loadStripe('pk_test_51Rif0oFJf0gADv6KDCfdtHnUdMHqnAGd3pvXobHmGETvjuA3mVjOH3gJwPjnnacFcvlRXgyL2GO0r1lWpmlD4tdg00Bndbr7IO')
 
 SwiperCore.use([Navigation, Pagination]);
 
@@ -99,12 +105,28 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/tours" element={<ToursPage addToCart={addToCart} />} />
             <Route path="/restaurants" element={<RestaurantsPage addToCart={addToCart} />} />
-            <Route path="/theme-parks" element={<CategoryPage data={themeParksData} title="Parques Temáticos" titleEn="Theme Parks" addToCart={addToCart} />} />
+            <Route path="/theme-parks" element={<CategoryPage
+                  data={themeParksData}
+                  title="Parques Temáticos"
+                  titleEn="Theme Parks"
+                  addToCart={addToCart}
+                />
+              }
+            />
             <Route path="/water-parks" element={<CategoryPage data={waterParksData} title="Parques Aquáticos" titleEn="Water Parks" addToCart={addToCart} />} />
-            <Route path="/food-drinks" element={<CategoryPage data={foodDrinksData} title="Comida e Bebidas" titleEn="Food & Drinks" addToCart={addToCart} />} />
             <Route path="/nightlife" element={<CategoryPage data={nightlifeData} title="Vida Noturna" titleEn="Nightlife" addToCart={addToCart} />} />
-            <Route path="/beyond-parks" element={<CategoryPage data={beyondParksData} title="Além dos Parques" titleEn="Beyond Parks" addToCart={addToCart} />} />
-            <Route path="/cart" element={<CartPage cart={cart} removeFromCart={removeFromCart} updateQuantity={updateQuantity} />} />
+            <Route
+              path="/cart"
+              element={
+                <Elements stripe={stripePromise}>
+                  <CartPage
+                    cart={cart}
+                    removeFromCart={removeFromCart}
+                    updateQuantity={updateQuantity}
+                  />
+                </Elements>
+              }
+            />
           </Routes>
         </div>
       </Router>
@@ -350,6 +372,8 @@ function HomePage() {
                 <li><Link to="/tours" className="footer-link">Tours</Link></li>
                 <li><Link to="/restaurants" className="footer-link">{language === 'pt' ? 'Restaurantes' : 'Restaurants'}</Link></li>
                 <li><Link to="/theme-parks" className="footer-link">{language === 'pt' ? 'Parques Temáticos' : 'Theme Parks'}</Link></li>
+                <li><Link to="/water-parks" className="footer-link">{language === 'pt' ? 'Parques Aquaticos' : 'Water Parks'}</Link></li>
+                <li><Link to="/nightlife" className="footer-link">{language === 'pt' ? 'Vida Noturna' : 'Night Life'}</Link></li>
               </ul>
             </div>
             
@@ -481,19 +505,20 @@ function ToursPage({ addToCart }) {
           />
           
           <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="filter-select"
-          >
-            <option value="">
-              {language === 'pt' ? 'Todas as categorias' : 'All categories'}
-            </option>
-            {categories.map(category => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+  value={selectedCategory}
+  onChange={e => setSelectedCategory(e.target.value)}
+  className="filter-select"
+>
+  <option key="all-categories" value="">
+    {language === 'pt' ? 'Todas as categorias' : 'All categories'}
+  </option>
+  {categories.map(category => (
+    <option key={category} value={category}>
+      {category}
+    </option>
+  ))}
+</select>
+
         </div>
       </div>
 
@@ -566,21 +591,23 @@ function RestaurantsPage({ addToCart }) {
           />
           
           <select
-            value={selectedCuisine}
-            onChange={(e) => setSelectedCuisine(e.target.value)}
-            className="filter-select"
-          >
-            <option value="">
-              {language === 'pt' ? 'Todas as cozinhas' : 'All cuisines'}
-            </option>
-            {cuisines.map((cuisine) => (
-              <option key={cuisine} value={cuisine}>
-                {cuisine}
-              </option>
-            ))}
-          </select>
+  value={selectedCuisine}
+  onChange={e => setSelectedCuisine(e.target.value)}
+  className="filter-select"
+>
+  <option key="all-cuisines" value="">
+    {language === 'pt' ? 'Todas as cozinhas' : 'All cuisines'}
+  </option>
+  {cuisines.map(cuisine => (
+    <option key={cuisine} value={cuisine}>
+      {cuisine}
+    </option>
+  ))}
+</select>
+
         </div>
       </div>
+      
 
       <div className="items-grid">
         {filteredRestaurants.map((restaurant) => (
@@ -607,21 +634,27 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
   const { language } = useContext(LanguageContext)
   const navigate = useNavigate()
 
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => {
-      const price = parseFloat(item.price?.replace('$', '') || '0')
-      return total + (price * item.quantity)
+  // calcula corretamente mesmo que price seja number ou string
+  const getTotalPrice = () =>
+    cart.reduce((sum, item) => {
+      const price =
+        typeof item.price === 'number'
+          ? item.price
+          : parseFloat(item.price) || 0
+      return sum + price * item.quantity
     }, 0)
-  }
 
-  const getTotalItems = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0)
-  }
+  const subtotal = getTotalPrice()
+  const serviceFee = subtotal * 0.05
+  const total = subtotal + serviceFee
+
+  const getTotalItems = () =>
+    cart.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <main className="cart-page">
       <div className="cart-container">
-        {/* Cart Header */}
+        {/* Header */}
         <div className="cart-header">
           <div className="cart-header-content">
             <div className="cart-title-section">
@@ -632,22 +665,26 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
               <div className="cart-items-count">
                 {getTotalItems()} {language === 'pt' ? 'itens' : 'items'}
               </div>
-            </div>           
+            </div>
           </div>
         </div>
+
+        {/* Empty State */}
         {cart.length === 0 ? (
           <div className="empty-cart">
             <div className="empty-cart-content">
               <div className="empty-cart-icon">🛒</div>
               <h2 className="empty-cart-title">
-                {language === 'pt' ? 'Seu carrinho está vazio' : 'Your cart is empty'}
+                {language === 'pt'
+                  ? 'Seu carrinho está vazio'
+                  : 'Your cart is empty'}
               </h2>
               <p className="empty-cart-text">
-                {language === 'pt' 
-                  ? 'Adicione alguns itens incríveis para começar sua aventura em Orlando!' 
+                {language === 'pt'
+                  ? 'Adicione alguns itens incríveis para começar sua aventura em Orlando!'
                   : 'Add some amazing items to start your Orlando adventure!'}
               </p>
-              <button 
+              <button
                 onClick={() => navigate('/tours')}
                 className="continue-shopping-btn"
               >
@@ -656,18 +693,18 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
             </div>
           </div>
         ) : (
+          /* Cart + Order Summary + Stripe Checkout */
           <div className="cart-content">
-            {/* Cart Items */}
             <div className="cart-items-section">
               <h2 className="cart-section-title">
                 {language === 'pt' ? 'Itens do Carrinho' : 'Cart Items'}
               </h2>
               <div className="cart-items-list">
-                {cart.map((item) => (
-                  <CartItem 
-                    key={item.id} 
-                    item={item} 
-                    removeFromCart={removeFromCart} 
+                {cart.map(item => (
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    removeFromCart={removeFromCart}
                     updateQuantity={updateQuantity}
                     language={language}
                   />
@@ -675,55 +712,38 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
               </div>
             </div>
 
-            {/* Order Summary */}
             <div className="order-summary-section">
               <div className="order-summary">
                 <h2 className="order-summary-title">
                   {language === 'pt' ? 'Resumo do Pedido' : 'Order Summary'}
                 </h2>
-                
-                <div className="order-summary-content">
-                  <div className="order-summary-row">
-                    <span className="order-summary-label">
-                      {language === 'pt' ? 'Subtotal' : 'Subtotal'}
-                    </span>
-                    <span className="order-summary-value">
-                      ${getTotalPrice().toFixed(2)}
-                    </span>
-                  </div>
-                  
-                  <div className="order-summary-row">
-                    <span className="order-summary-label">
-                      {language === 'pt' ? 'Taxa de Serviço' : 'Service Fee'}
-                    </span>
-                    <span className="order-summary-value">
-                      ${(getTotalPrice() * 0.05).toFixed(2)}
-                    </span>
-                  </div>
-                  
-                  <div className="order-summary-divider"></div>
-                  
-                  <div className="order-summary-row order-summary-total">
-                    <span className="order-summary-label">
-                      {language === 'pt' ? 'Total' : 'Total'}
-                    </span>
-                    <span className="order-summary-value">
-                      ${(getTotalPrice() * 1.05).toFixed(2)}
-                    </span>
-                  </div>
+
+                <div className="summary-item">
+                  <span>{language === 'pt' ? 'Subtotal:' : 'Subtotal:'}</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="summary-item">
+                  <span>
+                    {language === 'pt' ? 'Taxa de Serviço:' : 'Service Fee:'}
+                  </span>
+                  <span>${serviceFee.toFixed(2)}</span>
+                </div>
+                <div className="summary-total">
+                  <span>{language === 'pt' ? 'Total:' : 'Total:'}</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
 
-                <div className="checkout-section">
-                  <button className="checkout-btn">
-                    {language === 'pt' ? 'Finalizar Compra' : 'Proceed to Checkout'}
-                  </button>
-                  <button 
-                    onClick={() => navigate('/tours')}
-                    className="continue-shopping-btn-secondary"
-                  >
-                    {language === 'pt' ? 'Continuar Comprando' : 'Continue Shopping'}
-                  </button>
-                </div>
+                {/* Stripe checkout form */}
+                <CheckoutForm totalAmount={total} />
+
+                <button
+                  className="continue-shopping-button"
+                  onClick={() => navigate('/')}
+                >
+                  {language === 'pt'
+                    ? 'Continuar Comprando'
+                    : 'Continue Shopping'}
+                </button>
               </div>
             </div>
           </div>
@@ -733,12 +753,18 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
   )
 }
 
+
+
+
 // Cart Item Component
 function CartItem({ item, removeFromCart, updateQuantity }) {
   const { language } = useContext(LanguageContext) 
   const name = language === 'pt' ? item.name : item.name_en
   const description = language === 'pt' ? item.description : item.description_en
-  const price = parseFloat(item.price?.replace('$', '') || '0')
+  const raw = item.price;
+  const price = typeof raw === 'number'
+  ? raw
+    : parseFloat(String(raw).replace('$', '')) || 0;
   const imageUrl = item.image
   return (
     <div className="cart-item">
@@ -751,10 +777,11 @@ function CartItem({ item, removeFromCart, updateQuantity }) {
             />
           : (
             <div className="cart-item-placeholder">
-              <span className="cart-item-placeholder-text">
-                {name.charAt(0)}
-              </span>
-            </div>
+              <span className="block text-sm text-gray-600">
+          {language === 'pt' ? 'Preço unitário:' : 'Unit price:'}
+        </span>
+        <span className="text-lg font-bold">${price.toFixed(2)}</span>
+      </div>
           )
         }
       </div>
@@ -795,22 +822,22 @@ function CartItem({ item, removeFromCart, updateQuantity }) {
         </div>
 
         <div className="flex items-center space-x-2">
-          <div className="flex items-center border rounded">
+          <div className="flex items-center ">
             <button
               onClick={() => updateQuantity(item.id, item.quantity - 1)}
               disabled={item.quantity <= 1}
-              className="px-2"
+              className="quantity-btn"
             >−</button>
-            <span className="px-2">{item.quantity}</span>
+            <span className="quantity-controls">{item.quantity}</span>
             <button
               onClick={() => updateQuantity(item.id, item.quantity + 1)}
-              className="px-2"
+              className="quantity-btn"
             >＋</button>
           </div>
 
           <button
             onClick={() => removeFromCart(item.id)}
-            className="text-red-500 hover:text-red-700"
+            className="remove-item-btn"
             title={language === 'pt' ? 'Remover item' : 'Remove item'}
           >
             <X size={20} />

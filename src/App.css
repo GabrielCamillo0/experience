@@ -912,7 +912,7 @@ body {
   padding: 0.25rem;
 }
 
-.quantity-btn {
+.quantity-btn  {
   width: 32px;
   height: 32px;
   border: none;
@@ -963,9 +963,10 @@ body {
 
 /* Cart Summary */
 .cart-summary {
-  position: sticky;
-  top: 2rem;
-  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
 }
 
 .summary-card {
@@ -1771,48 +1772,23 @@ body {
 }
 
 /* Botão genérico (vem da empty-cart e do header) */
-.continue-shopping-btn {
-  background-color: #f97316;
-  color: white;
-  border: none;
+.continue-shopping-button {
   margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: #f97316;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
 }
-.continue-shopping-btn:hover {
+.continue-shopping-button:hover {
   background-color: #ea580c;
   transform: translateY(-1px);
 }
 
-/* Ajuste nas ações de quantidade e remoção dentro do item */
-.quantity-controls {
-  background: #f1f5f9;
-  border-radius: 0.375rem;
-}
-.quantity-btn {
-  background: transparent;
-  border: none;
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-.quantity-btn:hover:not(:disabled) {
-  background: #e2e8f0;
-}
-.remove-item-btn {
-  background: #fee2e2;
-  border: none;
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.375rem;
-  transition: background 0.2s, transform 0.1s;
-}
-.remove-item-btn:hover {
-  background: #fca5a5;
-  transform: translateY(-1px);
-}
 
-/* Garante que o grid do carrinho fique alinhado */
 .cart-content {
   display: grid;
   grid-template-columns: 1fr 320px;
@@ -1822,4 +1798,79 @@ body {
   .cart-content {
     grid-template-columns: 1fr;
   }
+}
+.stripe-form {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+ .card-element-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  background-color: #fff;
+ }
+ .pay-button {
+  background-color: #6772e5; /* Cor primária do Stripe */
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+ }
+ .pay-button:hover {
+  background-color: #5469d4;
+ }
+ .pay-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+ }
+ .error-message {
+  color: #e00000;
+  margin-top: 10px;
+  font-size: 14px;
+ }
+ .success-message {
+  color: #28a745;
+  margin-top: 10px;
+  font-size: 14px;
+ }
+ .summary-item,
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+/* Deixa o total mais destacado */
+.summary-total {
+  font-weight: 700;
+  font-size: 1.125rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 0.5rem;
+}
+
+.field-group {
+  margin-bottom: 1rem;
+}
+
+.field-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.StripeElement {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  box-sizing: border-box;
 }

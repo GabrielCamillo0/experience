@@ -9,6 +9,7 @@ import 'swiper/css/pagination';
 
 
 
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')

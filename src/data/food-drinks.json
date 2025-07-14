@@ -205,15 +205,16 @@
         "description_en": "Enjoy a delicious breakfast with Disney characters at the Contemporary Resort.",
         "image": "/media/chef-mickeys.webp",
         "gallery": ["/media/chef-mickeys.webp"],
-        "price": null,
+        "price": 51.00 ,
         "rating": 4.6,
         "location": "Disney's Contemporary Resort, Orlando, FL",
         "category": "Comida e Bebidas",
         "address": "Disney's Contemporary Resort, Orlando, FL",
         "hours": "Café da manhã: 7h às 11h30",
         "phone": "(407) 939-3463",
-        "social": {},
-        "call_to_action": null
+        "social": "@waltdisneyworld",
+        "call_to_action": null,
+        "Obs": "Criança paga US$33"
     }
 ]
 

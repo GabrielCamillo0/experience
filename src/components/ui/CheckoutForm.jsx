@@ -46,6 +46,20 @@ export default function CheckoutForm({ totalAmount }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: Math.round(totalAmount * 100) }),
       })
+       
+      if (!response.ok) {
+        let errText
+        try {
+          // se o servidor retornar JSON de erro
+          const errJson = await response.json()
+          errText = errJson.error || JSON.stringify(errJson)
+        } catch {
+          // se não for JSON
+          errText = await response.text()
+        }
+        throw new Error(`Erro ao criar PaymentIntent: ${errText}`)
+      }
+
       const { clientSecret } = await res.json()
 
       // 2) confirmar no front

@@ -7,20 +7,20 @@ import {
   CardExpiryElement,
   CardCvcElement
 } from '@stripe/react-stripe-js'
-import '../../App.css' // ou './CheckoutForm.css' se criar um arquivo específico
+import '../../App.css'
 import { LanguageContext } from '../../LanguageContext'
 
-// opções de estilo para todos os Stripe Elements
+// estilos comuns para todos os Stripe Elements
 const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
       fontSize: '16px',
       color: '#424770',
       '::placeholder': { color: '#aab7c4' },
-      padding: '12px 14px',
+      padding: '12px 14px'
     },
-    invalid: { color: '#9e2146' },
-  },
+    invalid: { color: '#9e2146' }
+  }
 }
 
 export default function CheckoutForm({ totalAmount }) {
@@ -36,40 +36,41 @@ export default function CheckoutForm({ totalAmount }) {
     e.preventDefault()
     if (!stripe || !elements) return
     setIsLoading(true)
-    const cardElement = elements.getElement(CardNumberElement)
+
+    // amount em centavos
+    const payload = { amount: Math.round(totalAmount * 100) }
     const url = `${import.meta.env.BACKEND_URL}/create-payment-intent`
 
     try {
-      // 1) criar paymentIntent no back
-      const res = await fetch(url,{
+      // 1) criar o PaymentIntent no seu backend
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: Math.round(totalAmount * 100) }),
+        body: JSON.stringify(payload)
       })
-       
-      if (!response.ok) {
+
+      if (!res.ok) {
+        // tenta extrair mensagem do corpo
         let errText
         try {
-          // se o servidor retornar JSON de erro
-          const errJson = await response.json()
+          const errJson = await res.json()
           errText = errJson.error || JSON.stringify(errJson)
         } catch {
-          // se não for JSON
-          errText = await response.text()
+          errText = await res.text()
         }
         throw new Error(`Erro ao criar PaymentIntent: ${errText}`)
       }
 
       const { clientSecret } = await res.json()
 
-      // 2) confirmar no front
+      // 2) confirmar o pagamento no front
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         clientSecret,
         {
           payment_method: {
-            card: cardElement,
-            billing_details: { name: 'Cliente Teste' },
-          },
+            card: elements.getElement(CardNumberElement),
+            billing_details: { name: 'Cliente Teste' }
+          }
         }
       )
 
@@ -111,7 +112,9 @@ export default function CheckoutForm({ totalAmount }) {
       </h3>
 
       <div className="field-group">
-        <label>{language === 'pt' ? 'Número do Cartão' : 'Card Number'}</label>
+        <label>
+          {language === 'pt' ? 'Número do Cartão' : 'Card Number'}
+        </label>
         <CardNumberElement
           options={CARD_ELEMENT_OPTIONS}
           className="StripeElement"
@@ -137,16 +140,16 @@ export default function CheckoutForm({ totalAmount }) {
       </div>
 
       {errorMessage && (
-        <div className="error-message">{errorMessage}</div>
+        <div className="error-message mt-2">{errorMessage}</div>
       )}
       {successMessage && (
-        <div className="success-message">{successMessage}</div>
+        <div className="success-message mt-2">{successMessage}</div>
       )}
 
       <button
         type="submit"
         disabled={!stripe || isLoading}
-        className="pay-button"
+        className="pay-button mt-4"
       >
         {isLoading
           ? language === 'pt'

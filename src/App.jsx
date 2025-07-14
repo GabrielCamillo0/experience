@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { Button } from "./components/ui/button";
+import CheckoutWithPaymentElement from './components/ui/CheckoutWithPaymentElement'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
 import { Input } from "./components/ui/input";
 import { Badge } from "./components/ui/badge";
@@ -629,6 +630,11 @@ function RestaurantsPage({ addToCart }) {
   )
 }
 
+
+
+
+
+
 // Cart Page Component
 function CartPage({ cart, removeFromCart, updateQuantity }) {
   const { language } = useContext(LanguageContext)
@@ -650,6 +656,19 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
 
   const getTotalItems = () =>
     cart.reduce((sum, item) => sum + item.quantity, 0)
+
+    useEffect(() => {
+      // chama seu backend para criar PaymentIntent
+      fetch('/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: total, currency: stripeCurrency })
+      })
+        .then(r => r.json())
+        .then(j => setClientSecret(j.clientSecret))
+        .catch(console.error)
+    }, [total, stripeCurrency])
+
 
   return (
     <main className="cart-page">
@@ -735,6 +754,10 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
 
                 {/* Stripe checkout form */}
                 <CheckoutForm totalAmount={total} />
+                {/* somente quando já tivermos clientSecret */}
+     {clientSecret && 
+       <CheckoutWithPaymentElement clientSecret={clientSecret} />
+     }
 
                 <button
                   className="continue-shopping-button"

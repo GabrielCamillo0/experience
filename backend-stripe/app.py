@@ -14,14 +14,21 @@ stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 def create_payment_intent():
     try:
         data = request.get_json(force=True)
-        amount = data.get('amount')
+        amount   = data['amount']
+        currency = data.get('currency', 'usd')
         if amount is None:
             return jsonify({'error': 'Amount is required'}), 400
 
         # 2. Cria o PaymentIntent no Stripe
         intent = stripe.PaymentIntent.create(
             amount=int(amount),   # valor em centavos
-            currency='usd',
+            currency=currency,
+            payment_method_types=[
+          'card',
+          'boleto',       # Brasil
+          'ideal',        # Europa, se quiser
+          'sofort',       # Europa
+        ],
             metadata={'integration_checksum': 'manual_integration'},
         )
 

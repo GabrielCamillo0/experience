@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 # 1. Configure sua chave secreta do Stripe:
-stripe.api_key ="STRIPE_SECRET_KEY"
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
     
 
 @app.route('/create-payment-intent', methods=['POST'])
@@ -32,4 +32,5 @@ def create_payment_intent():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0',port=port, debug=True)

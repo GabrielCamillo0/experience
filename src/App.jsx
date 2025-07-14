@@ -29,6 +29,7 @@ import beyondParksData from './data/beyond-parks.json'
 
 const stripePromise = loadStripe('pk_test_51Rif0oFJf0gADv6KDCfdtHnUdMHqnAGd3pvXobHmGETvjuA3mVjOH3gJwPjnnacFcvlRXgyL2GO0r1lWpmlD4tdg00Bndbr7IO')
 
+
 SwiperCore.use([Navigation, Pagination]);
 
 function App() {

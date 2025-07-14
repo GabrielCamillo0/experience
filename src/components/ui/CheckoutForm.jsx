@@ -37,10 +37,11 @@ export default function CheckoutForm({ totalAmount }) {
     if (!stripe || !elements) return
     setIsLoading(true)
     const cardElement = elements.getElement(CardNumberElement)
+    const url = `${import.meta.env.BACKEND_URL}/create-payment-intent`
 
     try {
       // 1) criar paymentIntent no back
-      const res = await fetch('/create-payment-intent', {
+      const res = await fetch(url,{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: Math.round(totalAmount * 100) }),

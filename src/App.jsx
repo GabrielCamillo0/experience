@@ -27,8 +27,7 @@ import nightlifeData from './data/nightlife.json'
 import beyondParksData from './data/beyond-parks.json'
 
 
-const stripePromise = loadStripe('pk_test_51Rif0oFJf0gADv6KDCfdtHnUdMHqnAGd3pvXobHmGETvjuA3mVjOH3gJwPjnnacFcvlRXgyL2GO0r1lWpmlD4tdg00Bndbr7IO')
-
+const stripePromise = loadStripe('pk_live_51Rj0y1L7b75eyCMpeUmRZv5XI71i6Pcnw02DOynfCnaAU4mYaakkEeuQmo76YE8EeY0CrGP5I9dByakfS3X3dr2V00blmzyW7t')
 
 SwiperCore.use([Navigation, Pagination]);
 

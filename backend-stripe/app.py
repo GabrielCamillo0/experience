@@ -16,11 +16,11 @@ def add_cors_headers(resp):
     return resp
 
 # Carrega a chave secreta do Stripe via variável de ambiente
-VITE_STRIPE_SECRET_KEY = os.getenv("VITE_STRIPE_SECRET_KEY")
-if not VITE_STRIPE_SECRET_KEY:
-    raise RuntimeError("Defina VITE_STRIPE_SECRET_KEY no ambiente da sua hospedagem.")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+if not STRIPE_SECRET_KEY:
+    raise RuntimeError("Defina STRIPE_SECRET_KEY no ambiente da sua hospedagem.")
 
-stripe.api_key = VITE_STRIPE_SECRET_KEY
+stripe.api_key = STRIPE_SECRET_KEY
 
 # Mapeia idiomas/moedas do front para códigos aceitos pelo Stripe
 SUPPORTED_CURRENCIES = {"usd", "brl"}

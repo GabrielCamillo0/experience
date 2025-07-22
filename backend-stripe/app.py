@@ -1,43 +1,68 @@
+# backend-stripe/app.py
 import os
+import math
 import stripe
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins="*") 
 
-# 1. Configure sua chave secreta do Stripe:
-stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-    
+# Carrega a chave secreta do Stripe via variável de ambiente
+VITE_STRIPE_SECRET_KEY = os.getenv("VITE_STRIPE_SECRET_KEY")
+if not VITE_STRIPE_SECRET_KEY:
+    raise RuntimeError("Defina VITE_STRIPE_SECRET_KEY no ambiente da sua hospedagem.")
 
-@app.route('/create-payment-intent', methods=['POST'])
+stripe.api_key = VITE_STRIPE_SECRET_KEY
+
+# Mapeia idiomas/moedas do front para códigos aceitos pelo Stripe
+SUPPORTED_CURRENCIES = {"usd", "brl"}
+
+@app.route("/create-payment-intent", methods=["POST"])
 def create_payment_intent():
     try:
-        data = request.get_json(force=True)
-        amount   = data['amount']
-        currency = data.get('currency', 'usd')
-        if amount is None:
-            return jsonify({'error': 'Amount is required'}), 400
+        data = request.get_json(force=True) or {}
+        amount = data.get("amount",0)
+        currency = (data.get("currency") or "usd").lower()
 
-        # 2. Cria o PaymentIntent no Stripe
+        # validações
+        if amount is None:
+            return jsonify({"error": "amount é obrigatório"}), 400
+        if currency not in SUPPORTED_CURRENCIES:
+            return jsonify({"error": f"currency inválida: {currency}"}), 400
+
+        # Stripe espera o valor em centavos (integer)
+        # seu front está mandando "total" em dólares/reais => convertemos
+        amount_in_cents = int(math.floor(float(amount) * 100))
+
+        if amount_in_cents <= 0:
+            return jsonify({"error": "amount deve ser > 0"}), 400
+
+        # Cria o PaymentIntent
         intent = stripe.PaymentIntent.create(
-            amount=int(amount),   # valor em centavos
+            amount=amount_in_cents,
             currency=currency,
+            # Tipos que você quer habilitar (Stripe precisa estar ativado p/ cada um no dashboard)
             payment_method_types=[
-          'card',
-          'boleto',       # Brasil
-          'ideal',        # Europa, se quiser
-          'sofort',       # Europa
-        ],
-            metadata={'integration_checksum': 'manual_integration'},
+                "card",
+                "boleto" if currency == "brl" else "card",  # exemplo simples
+            ],
+            metadata={"origin": "experience-florida"},
         )
 
-        return jsonify({'clientSecret': intent.client_secret})
-    except Exception as e:
-        # 3. Log completo para ajudar no debug
-        app.logger.exception("Error creating payment intent:")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"clientSecret": intent.client_secret}), 200
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0',port=port, debug=True)
+    except stripe.error.StripeError as e:
+        # Erros vindos do Stripe, com info estruturada
+        body = e.json_body if hasattr(e, "json_body") else {}
+        err = body.get("error", {})
+        return jsonify({"error": err.get("message", str(e))}), 400
+
+    except Exception as e:
+        app.logger.exception("Erro ao criar PaymentIntent")
+        return jsonify({"error": str(e)}), 500
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)

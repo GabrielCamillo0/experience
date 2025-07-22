@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { Button } from "./components/ui/button";
-import CheckoutWithPaymentElement from './components/ui/CheckoutWithPaymentElement'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
 import { Input } from "./components/ui/input";
 import { Badge } from "./components/ui/badge";
@@ -29,6 +29,9 @@ import beyondParksData from './data/beyond-parks.json'
 
 
 const stripePromise = loadStripe('pk_live_51Rj0y1L7b75eyCMpeUmRZv5XI71i6Pcnw02DOynfCnaAU4mYaakkEeuQmo76YE8EeY0CrGP5I9dByakfS3X3dr2V00blmzyW7t')
+
+
+
 
 SwiperCore.use([Navigation, Pagination]);
 
@@ -120,6 +123,7 @@ function App() {
               path="/cart"
               element={
                 <Elements stripe={stripePromise}>
+                  
                   <CartPage
                     cart={cart}
                     removeFromCart={removeFromCart}
@@ -633,14 +637,14 @@ function RestaurantsPage({ addToCart }) {
 
 
 
-
+const API_BASE = import.meta.env.VITE_BACKEND_URL || '';
 
 // Cart Page Component
 function CartPage({ cart, removeFromCart, updateQuantity }) {
   const { language } = useContext(LanguageContext)
   const navigate = useNavigate()
-
-  // calcula corretamente mesmo que price seja number ou string
+  
+  
   const getTotalPrice = () =>
     cart.reduce((sum, item) => {
       const price =
@@ -649,6 +653,11 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
           : parseFloat(item.price) || 0
       return sum + price * item.quantity
     }, 0)
+    const stripeCurrency = language === 'pt' ? 'brl' : 'usd';
+    const locale = language === 'pt' ? 'pt-BR' : 'en-US'
+    const currency = language === 'pt' ? 'BRL'    : 'USD'
+
+
 
   const subtotal = getTotalPrice()
   const serviceFee = subtotal * 0.05
@@ -656,10 +665,10 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
 
   const getTotalItems = () =>
     cart.reduce((sum, item) => sum + item.quantity, 0)
-
+    const [clientSecret, setClientSecret] = useState(null);
     useEffect(() => {
       // chama seu backend para criar PaymentIntent
-      fetch('/create-payment-intent', {
+      fetch(`${API_BASE}/create-payment-intent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: total, currency: stripeCurrency })
@@ -667,7 +676,7 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
         .then(r => r.json())
         .then(j => setClientSecret(j.clientSecret))
         .catch(console.error)
-    }, [total, stripeCurrency])
+    }, [total, stripeCurrency,API_BASE])
 
 
   return (

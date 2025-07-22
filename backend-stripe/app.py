@@ -47,8 +47,7 @@ def create_payment_intent():
         
         payment_method_types = [
          "card",
-         "boleto",          # BRL
-         "pix",             # BRL (se ativado)
+         "boleto",          # BRL        
          "link",            # EUA
          "us_bank_account", # EUA
          "ideal", "sofort", "giropay", # Europa (exemplo)

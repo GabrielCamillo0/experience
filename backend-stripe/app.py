@@ -37,16 +37,23 @@ def create_payment_intent():
 
         if amount_in_cents <= 0:
             return jsonify({"error": "amount deve ser > 0"}), 400
+        
+        payment_method_types = [
+         "card",
+         "boleto",          # BRL
+         "pix",             # BRL (se ativado)
+         "link",            # EUA
+         "us_bank_account", # EUA
+         "ideal", "sofort", "giropay", # Europa (exemplo)
+         # ... adicione os que você ativou no Dashboard
+        ]
 
         # Cria o PaymentIntent
         intent = stripe.PaymentIntent.create(
             amount=amount_in_cents,
-            currency=currency,
-            # Tipos que você quer habilitar (Stripe precisa estar ativado p/ cada um no dashboard)
-            payment_method_types=[
-                "card",
-                "boleto" if currency == "brl" else "card",  # exemplo simples
-            ],
+            currency=currency,       
+            payment_method_types=payment_method_types,
+            automatic_payment_methods={"enabled": False},
             metadata={"origin": "experience-florida"},
         )
 

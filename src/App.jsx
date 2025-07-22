@@ -17,6 +17,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import './App.css'
 import CheckoutForm from './components/ui/CheckoutForm'
+import CheckoutWithPaymentElement from "./components/ui/CheckoutWithPaymentElement";
 
 // Import data
 import toursData from './data/tours.json'
@@ -761,12 +762,20 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
                   <span>${total.toFixed(2)}</span>
                 </div>
 
-                {/* Stripe checkout form */}
-                <CheckoutForm totalAmount={total} />
-                {/* somente quando já tivermos clientSecret */}
-     {clientSecret && 
-       <CheckoutWithPaymentElement clientSecret={clientSecret} />
-     }
+               
+               
+                
+                {clientSecret && (
+        <Elements
+          stripe={stripePromise}
+          options={{ clientSecret, locale }}   // locale = 'pt-BR' ou 'en-US'
+        >
+          <CheckoutWithPaymentElement
+            clientSecret={clientSecret}
+            locale={locale}
+          />
+        </Elements>
+      )}
 
                 <button
                   className="continue-shopping-button"

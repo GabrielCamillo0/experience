@@ -48,10 +48,7 @@ def create_payment_intent():
         payment_method_types = [
          "card",
          "boleto",          # BRL        
-         "link",            # EUA
-         "us_bank_account", # EUA
-         "ideal", "sofort", "giropay", # Europa (exemplo)
-         # ... adicione os que você ativou no Dashboard
+         
         ]
 
         # Cria o PaymentIntent

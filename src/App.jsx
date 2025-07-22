@@ -638,7 +638,7 @@ function RestaurantsPage({ addToCart }) {
 
 
 
-const API_BASE = import.meta.env.VITE_BACKEND_URL || '';
+const API_BASE = import.meta.env.VITE_BACKEND_URL || '/api';
 
 // Cart Page Component
 function CartPage({ cart, removeFromCart, updateQuantity }) {

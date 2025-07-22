@@ -13,7 +13,9 @@ const urlsToCache = [
 ];
 
 // Install event - cache resources
-self.addEventListener('install', (event) => {
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith('/create-payment-intent')) return;
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {

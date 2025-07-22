@@ -8,10 +8,10 @@ export default defineConfig({
     proxy: {
       // Todas as requisições a /create-paymentintent serão encaminhadas
       // para o seu Flask rodando em localhost:5000
-      '/create-payment-intent': {
-        target: 'http://127.0.0.1:5000',
+      '/api': {
+        target: 'https://experience-x53b.onrender.com',
         changeOrigin: true,
-        secure: false
+        secure: true
       }
     }
   }

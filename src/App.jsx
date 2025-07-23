@@ -970,7 +970,7 @@ return (
           </div>
         )}
 
-        <div className="service-price text-lg font-bold mb-4">{price}</div>
+        <div className="service-price text-lg font-bold mb-4">R${price}</div>
 
         <button
           onClick={() => addToCart(item)}

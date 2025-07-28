@@ -1874,3 +1874,47 @@ body {
   background: white;
   box-sizing: border-box;
 }
+
+.details-modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0,0,0,0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+.details-modal-content {
+  background: white !important;
+  padding: 1.5rem !important;
+  border-radius: 0.5rem !important;
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  overflow: auto !important;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3) !important;
+}
+
+.chat-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  background-color: #25D366;  /* verde WhatsApp */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+  transition: transform 0.2s;
+}
+.chat-button:hover {
+  transform: scale(1.1);
+}
+

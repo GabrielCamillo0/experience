@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { Button } from "./components/ui/button";
+import DetailsModal from './components/ui/DetailsModal'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
 import { Input } from "./components/ui/input";
@@ -18,7 +19,7 @@ import 'swiper/css/pagination';
 import './App.css'
 import CheckoutForm from './components/ui/CheckoutForm'
 import CheckoutWithPaymentElement from "./components/ui/CheckoutWithPaymentElement";
-
+import ChatButton from './components/ui/ChatButton'
 // Import data
 import toursData from './data/tours.json'
 import restaurantsData from './data/restaurants.json'
@@ -37,10 +38,13 @@ const stripePromise = loadStripe('pk_live_51Rj0y1L7b75eyCMpeUmRZv5XI71i6Pcnw02DO
 SwiperCore.use([Navigation, Pagination]);
 
 function App() {
+  const [modalItem, setModalItem] = useState(null)
+  const showDetails = item => setModalItem(item)
+  const hideDetails = () => setModalItem(null)
+ 
   const [language, setLanguage] = useState('pt')
   const [cart, setCart] = useState([])
   const [isKioskMode, setIsKioskMode] = useState(false)
-
  
 
   useEffect(() => {
@@ -108,18 +112,18 @@ function App() {
           <Header cart={cart} />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/tours" element={<ToursPage addToCart={addToCart} />} />
-            <Route path="/restaurants" element={<RestaurantsPage addToCart={addToCart} />} />
+            <Route path="/tours" element={<ToursPage addToCart={addToCart} onShowDetails={showDetails} />} />
+            <Route path="/restaurants" element={<RestaurantsPage addToCart={addToCart} onShowDetails={showDetails} />} />
             <Route path="/theme-parks" element={<CategoryPage
                   data={themeParksData}
                   title="Parques Temáticos"
                   titleEn="Theme Parks"
-                  addToCart={addToCart}
+                  addToCart={addToCart} onShowDetails={showDetails}
                 />
               }
             />
-            <Route path="/water-parks" element={<CategoryPage data={waterParksData} title="Parques Aquáticos" titleEn="Water Parks" addToCart={addToCart} />} />
-            <Route path="/nightlife" element={<CategoryPage data={nightlifeData} title="Vida Noturna" titleEn="Nightlife" addToCart={addToCart} />} />
+            <Route path="/water-parks" element={<CategoryPage data={waterParksData} title="Parques Aquáticos" titleEn="Water Parks" addToCart={addToCart} onShowDetails={showDetails} />} />
+            <Route path="/nightlife" element={<CategoryPage data={nightlifeData} title="Vida Noturna" titleEn="Nightlife" addToCart={addToCart} onShowDetails={showDetails} />} />
             <Route
               path="/cart"
               element={
@@ -134,8 +138,18 @@ function App() {
               }
             />
           </Routes>
+          
         </div>
+        
+
       </Router>
+      {console.log('ModalItem:', modalItem)}
+        {modalItem && (
+          <DetailsModal item={modalItem} onClose={hideDetails} />
+        )}
+
+         <ChatButton />
+
     </LanguageContext.Provider>
   )
 }
@@ -464,7 +478,7 @@ function CategoryPage({ data, title, titleEn, addToCart }) {
 }
 
 // Tours Page Component
-function ToursPage({ addToCart }) {
+function ToursPage({ addToCart,onShowDetails }) {
   const { language } = useContext(LanguageContext)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -501,6 +515,7 @@ function ToursPage({ addToCart }) {
           {language === 'pt' ? 'Tours em Orlando' : 'Tours in Orlando'}
         </h1>
         
+        
         <div className="search-filters">
           <input
             type="text"
@@ -530,7 +545,7 @@ function ToursPage({ addToCart }) {
 
       <div className="items-grid">
         {filteredTours.map((tour) => (
-          <ItemCard key={tour.id} item={tour} addToCart={addToCart} />
+          <ItemCard key={tour.id} item={tour} addToCart={addToCart}  onShowDetails={onShowDetails}  />
         ))}
       </div>
 
@@ -617,7 +632,7 @@ function RestaurantsPage({ addToCart }) {
 
       <div className="items-grid">
         {filteredRestaurants.map((restaurant) => (
-          <ItemCard key={restaurant.id} item={restaurant} addToCart={addToCart} />
+          <ItemCard key={restaurant.id} item={restaurant} addToCart={addToCart}  />
         ))}
       </div>
 
@@ -640,156 +655,181 @@ function RestaurantsPage({ addToCart }) {
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || '/api';
 
-// Cart Page Component
 function CartPage({ cart, removeFromCart, updateQuantity }) {
   const { language } = useContext(LanguageContext)
   const navigate = useNavigate()
-  
-  
-  const getTotalPrice = () =>
-    cart.reduce((sum, item) => {
-      const price =
-        typeof item.price === 'number'
-          ? item.price
-          : parseFloat(item.price) || 0
-      return sum + price * item.quantity
-    }, 0)
-    const stripeCurrency = language === 'pt' ? 'brl' : 'usd';
-    const locale = language === 'pt' ? 'pt-BR' : 'en-US'
-    const currency = language === 'pt' ? 'BRL'    : 'USD'
 
-
-
-  const subtotal = getTotalPrice()
+  // Calcular totais e moeda
+  const subtotal = cart.reduce((sum, item) => {
+    const price = typeof item.price === 'number'
+      ? item.price
+      : parseFloat(item.price) || 0
+    return sum + price * item.quantity
+  }, 0)
   const serviceFee = subtotal * 0.05
   const total = subtotal + serviceFee
+  const stripeCurrency = language === 'pt' ? 'brl' : 'usd'
+  const locale = language === 'pt' ? 'pt-BR' : 'en-US'
 
-  const getTotalItems = () =>
-    cart.reduce((sum, item) => sum + item.quantity, 0)
-    const [clientSecret, setClientSecret] = useState(null);
-    useEffect(() => {
-      // chama seu backend para criar PaymentIntent
-      fetch(`${API_BASE}/create-payment-intent`, {
+  // Formulário de dados do cliente
+  const [form, setForm] = useState({ name: '', email: '', phone: '' })
+  const isFormValid = form.name && form.email && form.phone
+
+  // Estado do checkout e PaymentIntent
+  const [step, setStep] = useState('form') // 'form' ou 'payment'
+  const [clientSecret, setClientSecret] = useState(null)
+
+  // Enviar formulário e criar PaymentIntent
+  const handleSendForm = async () => {
+    if (!isFormValid) return
+    try {
+      const res = await fetch(`${API_BASE}/create-payment-intent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: total, currency: stripeCurrency })
+        body: JSON.stringify({ amount: Math.round(total * 100), currency: stripeCurrency, form })
       })
-        .then(r => r.json())
-        .then(j => setClientSecret(j.clientSecret))
-        .catch(console.error)
-    }, [total, stripeCurrency,API_BASE])
+      const { clientSecret: cs } = await res.json()
+      setClientSecret(cs)
+      setStep('payment')
+    } catch (err) {
+      console.error(err)
+      alert(language === 'pt' ? 'Erro ao processar seu pedido.' : 'Error processing your order.')
+    }
+  }
 
+  // Se carrinho vazio, mostrar estado
+  if (cart.length === 0) {
+    return (
+      <main className="cart-page flex flex-col items-center justify-center p-8">
+        <ShoppingCart className="w-16 h-16 text-gray-400 mb-4" />
+        <h2 className="text-2xl font-semibold mb-2">
+          {language === 'pt' ? 'Seu carrinho está vazio' : 'Your cart is empty'}
+        </h2>
+        <button
+          onClick={() => navigate('/tours')}
+          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+        >
+          {language === 'pt' ? 'Explorar Tours' : 'Explore Tours'}
+        </button>
+      </main>
+    )
+  }
 
   return (
-    <main className="cart-page">
-      <div className="cart-container">
-        {/* Header */}
-        <div className="cart-header">
-          <div className="cart-header-content">
-            <div className="cart-title-section">
-              <h1 className="cart-title">
-                <ShoppingCart className="cart-title-icon" />
-                {language === 'pt' ? 'Seu Carrinho' : 'Your Cart'}
-              </h1>
-              <div className="cart-items-count">
-                {getTotalItems()} {language === 'pt' ? 'itens' : 'items'}
+    <main className="cart-page max-w-6xl mx-auto p-6 md:flex md:space-x-6">
+      {/* Itens do carrinho */}
+      <section className="md:w-3/5 space-y-4">
+        {cart.map(item => {
+          const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0
+          return (
+            <div key={item.id} className="flex items-center bg-white p-4 rounded shadow">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-24 h-24 object-cover rounded mr-4"
+              />
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold">
+                  {language === 'pt' ? item.name : item.name_en}
+                </h3>
+                <p className="text-gray-600 text-sm mt-1">
+                  {language === 'pt' ? item.description : item.description_en}
+                </p>
+                <div className="flex items-center mt-2 space-x-2">
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    disabled={item.quantity <= 1}
+                    className="px-2 bg-gray-200 rounded hover:bg-gray-300"
+                  >−</button>
+                  <span>{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="px-2 bg-gray-200 rounded hover:bg-gray-300"
+                  >＋</button>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="ml-4 text-red-500 hover:text-red-700"
+                  >
+                    Remover
+                  </button>
+                </div>
               </div>
+              <span className="font-semibold">
+                ${(price * item.quantity).toFixed(2)}
+              </span>
             </div>
+          )
+        })}
+      </section>
+
+      {/* Resumo e checkout */}
+      <aside className="md:w-2/5 bg-gray-50 p-6 rounded-lg shadow space-y-6">
+        <h2 className="text-2xl font-semibold">
+          {language === 'pt' ? 'Resumo do Pedido' : 'Order Summary'}
+        </h2>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span>{language === 'pt' ? 'Subtotal' : 'Subtotal'}</span>
+            <span>${subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>{language === 'pt' ? 'Taxa de Serviço' : 'Service Fee'}</span>
+            <span>${serviceFee.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between font-bold text-lg">
+            <span>{language === 'pt' ? 'Total' : 'Total'}</span>
+            <span>${total.toFixed(2)}</span>
           </div>
         </div>
 
-        {/* Empty State */}
-        {cart.length === 0 ? (
-          <div className="empty-cart">
-            <div className="empty-cart-content">
-              <div className="empty-cart-icon">🛒</div>
-              <h2 className="empty-cart-title">
-                {language === 'pt'
-                  ? 'Seu carrinho está vazio'
-                  : 'Your cart is empty'}
-              </h2>
-              <p className="empty-cart-text">
-                {language === 'pt'
-                  ? 'Adicione alguns itens incríveis para começar sua aventura em Orlando!'
-                  : 'Add some amazing items to start your Orlando adventure!'}
-              </p>
-              <button
-                onClick={() => navigate('/tours')}
-                className="continue-shopping-btn"
-              >
-                {language === 'pt' ? 'Explorar Tours' : 'Explore Tours'}
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Cart + Order Summary + Stripe Checkout */
-          <div className="cart-content">
-            <div className="cart-items-section">
-              <h2 className="cart-section-title">
-                {language === 'pt' ? 'Itens do Carrinho' : 'Cart Items'}
-              </h2>
-              <div className="cart-items-list">
-                {cart.map(item => (
-                  <CartItem
-                    key={item.id}
-                    item={item}
-                    removeFromCart={removeFromCart}
-                    updateQuantity={updateQuantity}
-                    language={language}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="order-summary-section">
-              <div className="order-summary">
-                <h2 className="order-summary-title">
-                  {language === 'pt' ? 'Resumo do Pedido' : 'Order Summary'}
-                </h2>
-
-                <div className="summary-item">
-                  <span>{language === 'pt' ? 'Subtotal:' : 'Subtotal:'}</span>
-                  <span>${subtotal.toFixed(2)}</span>
-                </div>
-                <div className="summary-item">
-                  <span>
-                    {language === 'pt' ? 'Taxa de Serviço:' : 'Service Fee:'}
-                  </span>
-                  <span>${serviceFee.toFixed(2)}</span>
-                </div>
-                <div className="summary-total">
-                  <span>{language === 'pt' ? 'Total:' : 'Total:'}</span>
-                  <span>${total.toFixed(2)}</span>
-                </div>
-
-               
-               
-                
-                {clientSecret && (
-        <Elements
-          stripe={stripePromise}
-          options={{ clientSecret, locale }}   // locale = 'pt-BR' ou 'en-US'
-        >
-          <CheckoutWithPaymentElement
-            clientSecret={clientSecret}
-            locale={locale}
-          />
-        </Elements>
-      )}
-
-                <button
-                  className="continue-shopping-button"
-                  onClick={() => navigate('/')}
-                >
-                  {language === 'pt'
-                    ? 'Continuar Comprando'
-                    : 'Continue Shopping'}
-                </button>
-              </div>
-            </div>
+        {/* Formulário de dados */}
+        {step === 'form' && (
+          <div className="space-y-3">
+            <input
+              type="text"
+              placeholder={language === 'pt' ? 'Nome' : 'Name'}
+              value={form.name}
+              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="email"
+              placeholder="E-mail"
+              value={form.email}
+              onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+              className="w-full p-2 border rounded"
+            />
+            <input
+              type="tel"
+              placeholder={language === 'pt' ? 'Telefone' : 'Phone'}
+              value={form.phone}
+              onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+              className="w-full p-2 border rounded"
+            />
+            <button
+              onClick={handleSendForm}
+              disabled={!isFormValid}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded disabled:opacity-50"
+            >
+              {language === 'pt' ? 'Prosseguir para pagamento' : 'Proceed to payment'}
+            </button>
           </div>
         )}
-      </div>
+
+        {/* Stripe Payment */}
+        {step === 'payment' && clientSecret && (
+          <Elements stripe={stripePromise} options={{ clientSecret, locale }}>
+            <CheckoutWithPaymentElement />
+          </Elements>
+        )}
+
+        <button
+          onClick={() => navigate('/')}
+          className="w-full text-center text-gray-700 hover:underline"
+        >
+          {language === 'pt' ? 'Continuar Comprando' : 'Continue Shopping'}
+        </button>
+      </aside>
     </main>
   )
 }
@@ -900,7 +940,7 @@ function CartItem({ item, removeFromCart, updateQuantity }) {
 }
 
 // Item Card Component
-function ItemCard({ item, addToCart }) {
+function ItemCard({ item, addToCart,onShowDetails  }) {
   const { language } = useContext(LanguageContext)
 
   const name = language === 'pt' ? item.name : item.name_en
@@ -915,9 +955,10 @@ function ItemCard({ item, addToCart }) {
     : [];
 
 return (
-  <div className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm">
+  <div className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm"  onClick={() => onShowDetails(item)}>
   {/* === CARROSSEL DE IMAGENS === */}
   <div className="service-image-container">
+  
     <Swiper
       modules={[Navigation, Pagination, Autoplay]}
       navigation
@@ -947,7 +988,7 @@ return (
   
 
     {/* === CONTEÚDO DO CARD === */}
-    <div className="service-content p-4 flex flex-col">
+    <div className="service-content p-4 flex flex-col" onClick={() => onShowDetails(item)}>
       {/* ... resto do card ... */}
     </div>
   </div>

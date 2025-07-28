@@ -1,12 +1,37 @@
 # backend-stripe/app.py
-import os
-import math
-import stripe
+import os, math, stripe, smtplib
+from email.message import EmailMessage
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=False)
+
+NOTIFY_EMAIL = os.getenv("ORDER_NOTIFICATION_EMAIL")
+SMTP_HOST = os.getenv("SMTP_HOST")
+SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+SMTP_USER = os.getenv("SMTP_USER")
+SMTP_PASS = os.getenv("SMTP_PASS")
+
+def send_order_email(form, amount, currency):
+    msg = EmailMessage()
+    msg["Subject"] = "Novo pedido Experience Florida"
+    msg["From"] = SMTP_USER
+    msg["To"] = NOTIFY_EMAIL
+    body = (
+        f"Nome: {form['name']}\n"
+        f"E‑mail: {form['email']}\n"
+        f"Telefone: {form['phone']}\n"
+        f"Total: {amount} {currency}\n"
+    )
+    msg.set_content(body)
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
+        s.starttls()
+        s.login(SMTP_USER, SMTP_PASS)
+        s.send_message(msg)
+
+
 
 @app.after_request
 def add_cors_headers(resp):

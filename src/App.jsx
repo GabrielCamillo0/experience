@@ -30,8 +30,9 @@ import nightlifeData from './data/nightlife.json'
 import beyondParksData from './data/beyond-parks.json'
 
 
-const stripePromise = loadStripe('pk_live_51Rj0y1L7b75eyCMpeUmRZv5XI71i6Pcnw02DOynfCnaAU4mYaakkEeuQmo76YE8EeY0CrGP5I9dByakfS3X3dr2V00blmzyW7t')
 
+const stripePromise = loadStripe('pk_live_51Rj0y1L7b75eyCMpeUmRZv5XI71i6Pcnw02DOynfCnaAU4mYaakkEeuQmo76YE8EeY0CrGP5I9dByakfS3X3dr2V00blmzyW7t')
+const WA_NUMBER = '5511999998888';
 
 
 
@@ -658,6 +659,11 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL || '/api';
 function CartPage({ cart, removeFromCart, updateQuantity }) {
   const { language } = useContext(LanguageContext)
   const navigate = useNavigate()
+  const hasItems = cart.length > 0;
+
+  
+
+
 
   // Calcular totais e moeda
   const subtotal = cart.reduce((sum, item) => {
@@ -666,6 +672,7 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
       : parseFloat(item.price) || 0
     return sum + price * item.quantity
   }, 0)
+
   const serviceFee = subtotal * 0.05
   const total = subtotal + serviceFee
   const stripeCurrency = language === 'pt' ? 'brl' : 'usd'
@@ -696,6 +703,18 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
       alert(language === 'pt' ? 'Erro ao processar seu pedido.' : 'Error processing your order.')
     }
   }
+  const waCartMessage = encodeURIComponent(
+    (language==='pt'
+      ? 'Olá, Quero fazer o agendamento para os seguintes locais:\n'
+      : 'Hi, I would like to make a reservation for the following locations:\n'
+    ) +
+    cart.map(item => {
+      const name = language === 'pt' ? item.name : item.name_en
+      return `- ${name} x${item.quantity}`
+    }).join('\n') +
+    `\n${language==='pt' ? 'Total:' : 'Total:'} R$${total.toFixed(2)}`
+  )
+  const waCartUrl = `https://wa.me/${WA_NUMBER}?text=${waCartMessage}`
 
   // Se carrinho vazio, mostrar estado
   if (cart.length === 0) {
@@ -705,12 +724,32 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
         <h2 className="text-2xl font-semibold mb-2">
           {language === 'pt' ? 'Seu carrinho está vazio' : 'Your cart is empty'}
         </h2>
+
+        {/* Botão WhatsApp — só aparece / fica habilitado quando tiver itens */}
+<button
+  type="button"
+  onClick={() => window.open(waCartUrl, "_blank", "noopener,noreferrer")}
+  disabled={!hasItems}
+  className={
+    `w-full block text-center py-3 rounded
+     ${hasItems
+       ? "bg-green-500 hover:bg-green-600 text-white"
+       : "bg-gray-300 text-gray-600 cursor-not-allowed"}`
+  }
+>
+  {language === 'pt'
+    ? 'Enviar Pedido por WhatsApp'
+    : 'Submit request via WhatsApp'}
+</button>
+
+
         <button
           onClick={() => navigate('/tours')}
           className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
         >
           {language === 'pt' ? 'Explorar Tours' : 'Explore Tours'}
         </button>
+        
       </main>
     )
   }
@@ -946,7 +985,10 @@ function ItemCard({ item, addToCart,onShowDetails  }) {
   const name = language === 'pt' ? item.name : item.name_en
   const description = language === 'pt' ? item.description : item.description_en
   const price = item.price || '$0.00'
-
+  const waText = encodeURIComponent(
+    `${language === 'pt' ? 'Olá, tenho interesse no tuor para :' : 'Hi, I’d like more info about:'} ${name} – R$${price}`
+  )
+  const waUrl = `https://wa.me/${WA_NUMBER}?text=${waText}`
   // monta o array de imagens a partir de gallery ou image único
   const images = item.gallery?.length
   ? item.gallery
@@ -1019,6 +1061,14 @@ return (
         >
           {language === 'pt' ? 'Adicionar ao Carrinho' : 'Add to Cart'}
         </button>
+        <button
+           type="button"
+            onClick={() => window.open(waUrl, "_blank", "noopener,noreferrer")}
+           className="service-whatsapp-button bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+            >
+  {language === 'pt' ? 'Agendar via WhatsApp' : 'Schedule via WhatsApp'}
+</button>
+
       </div>
     </div>
   )

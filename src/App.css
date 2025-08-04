@@ -2130,7 +2130,7 @@ body {
   border-radius: 1rem;
   padding: 2rem;
   box-shadow: 0 25px 50px rgba(0,0,0,0.08);
-  margin-bottom: 2rem;
+  margin-bottom: 5rem;
 }
 
 .about-content {
@@ -2159,6 +2159,7 @@ body {
   margin-bottom: 1rem;
   line-height: 1.6;
   color: #374151;
+  font-size: 1.25rem;
 }
 
 .about-image-wrapper {
@@ -2177,6 +2178,7 @@ body {
 }
 
 .video-hero {
+  min-height: 500px;
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -2185,6 +2187,7 @@ body {
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
   background: #000;
   margin-bottom: 2rem;
+  display: flex;
 }
 
 .video-hero__video {
@@ -2219,7 +2222,7 @@ body {
 
 .video-hero__title {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
   margin: 0;
 }
 
@@ -2233,16 +2236,16 @@ body {
   font-size: 1rem;
   line-height: 1.4;
   margin: 0;
-  max-width: 700px;
+  max-width: 850px;
 }
 
 .video-hero__cta-transparent {
   margin-top: 1rem;
   padding: .75rem 1.5rem;
   background: transparent;
-  border: 2px solid rgba(255, 235, 59, 0.9); /* amarelo suave */
+  border: 1px solid rgba(255, 235, 59, 0.9); /* amarelo suave */
   color: white;
-  font-weight: 600;
+  font-weight: 700;
   border-radius: .5rem;
   cursor: pointer;
   transition: background .2s ease, color .2s ease;

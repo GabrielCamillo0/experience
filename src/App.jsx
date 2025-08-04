@@ -351,23 +351,23 @@ function HomePage() {
       </section>
 
       {/* Sobre Nós */}
-      <section className="about-section bg-white rounded-lg shadow-md p-8">
-        <div className="about-content max-w-4xl mx-auto flex flex-col md:flex-row gap-8">
-          <div className="about-text md:w-1/2">
-            <h2 className="about-title text-3xl font-bold mb-4">
+      <section className="about-section">
+        <div className="about-content">
+          <div className="about-text">
+            <h2 className="about-title">
               {language === 'pt' ? 'Sobre Nós' : 'About Us'}
             </h2>
-            <p className="about-paragraph text-gray-700 mb-3">
+            <p className="about-paragraph">
               {language === 'pt'
                 ? 'A Experience Florida é sua porta de entrada para vivenciar o melhor de Orlando. Com seleção cuidadosa de tours, restaurantes e atrações, fazemos sua jornada mais simples, divertida e inesquecível.'
                 : 'Experience Florida is your gateway to enjoying the best of Orlando. With curated tours, restaurants, and attractions, we make your journey easier, more fun, and unforgettable.'}
             </p>
-            <p className="about-paragraph text-gray-700 mb-3">
+            <p className="about-paragraph">
               {language === 'pt'
                 ? 'Nosso time conhece a cidade como ninguém e está comprometido em oferecer opções autênticas e personalizadas que combinam com o seu estilo de viagem.'
                 : 'Our team knows the city inside out and is committed to delivering authentic, personalized experiences that match your travel style.'}
             </p>
-            <p className="about-paragraph text-gray-700">
+            <p className="about-paragraph">
               {language === 'pt'
                 ? 'Seja sua primeira visita ou um retorno, estamos aqui para transformar cada momento em uma memória incrível.'
                 : 'Whether it’s your first visit or a return trip, we are here to turn every moment into an amazing memory.'}
@@ -750,7 +750,7 @@ function ItemCard({ item, addToCart}) {
     : [];
 
   return (
-    <div onClick={handleOpenModal}>
+    <div className="modern-service-card" onClick={handleOpenModal}>
     <Link
       to="/details"
       state={{ item }}
@@ -788,33 +788,34 @@ function ItemCard({ item, addToCart}) {
       </div>
       
 
-      {/* Conteúdo */}
       <div className="service-content">
         <div className="service-header">
-          <h3 className="service-title">
-            {name}
-          </h3>
-          <span className="rating-star">
-            ⭐ {item.rating}
-          </span>
-
-          <p className="text-sm text-gray-700 mb-4 ">
-            {description}
-          </p>
-
-          {item.hours && (
-            <p className="service-duration">
-              🕒 {item.hours}
-            </p>
-          )}
-          
-          <div className="service-price">
-            R${price}
+          <h3 className="service-title">{name}</h3>
+          <div className="service-rating">
+            <span className="rating-star">⭐</span>
+            <span className="rating-value">{item.rating}</span>
           </div>
         </div>
+        
+        <div className="service-location">
+          <span className="location-icon">📍</span>
+          <span className="location-text">{item.location}</span>
+        </div>
+        
+        <p className="service-description">{description}</p>
+        
+        {item.hours && (
+          <div className="service-duration">
+            <span className="duration-icon">🕒</span>
+            <span className="duration-text">{item.hours}</span>
+          </div>
+        )}
+        
+        <div className="service-price">
+          <span className="price-text">${item.price || '$0.00'}</span>
+        </div>
 
-        {/* Botões */}
-        <div className="mt-4 flex space-x-2">
+       
           <button
             type="button"
             onClick={e => {
@@ -822,7 +823,7 @@ function ItemCard({ item, addToCart}) {
               e.stopPropagation();
               addToCart(item);
             }}
-            className="service-add-button bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="service-add-button"
           >
             {language === "pt" ? "Adicionar ao Carrinho" : "Add to Cart"}
           </button>
@@ -840,7 +841,7 @@ function ItemCard({ item, addToCart}) {
               ? "Agendar via WhatsApp"
               : "Schedule via WhatsApp"}
           </button>
-        </div>
+        
       </div>
     </Link>
     </div>
@@ -919,44 +920,7 @@ function CartPage({ cart, removeFromCart, updateQuantity}) {
   )
   const waCartUrl = `https://wa.me/${WA_NUMBER}?text=${waCartMessage}`
 
-  // Se carrinho vazio, mostrar estado
-  if (cart.length === 0) {
-    return (
-      <aside className="order-summary-section p-6 border rounded-lg space-y-4">
-        <ShoppingCart className="w-16 h-16 text-gray-400 mb-4" />
-        <h2 className="text-2xl font-semibold mb-2">
-          {language === 'pt' ? 'Seu carrinho está vazio' : 'Your cart is empty'}
-        </h2>
-
-        {/* Botão WhatsApp — só aparece / fica habilitado quando tiver itens */}
-        <button
-      type="button"
-      onClick={() => window.open(waCartUrl, "_blank")}
-      disabled={!hasItems}
-      className={`
-        whatsapp-button
-        ${hasItems 
-          ? "hover:bg-green-600" 
-          : "cursor-not-allowed opacity-50"
-        }
-      `}
-    >
-      {language === 'pt'
-        ? 'Enviar Pedido por WhatsApp'
-        : 'Submit request via WhatsApp'}
-    </button>
-
-
-        <button
-          onClick={() => navigate('/tours')}
-          className="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
-        >
-          {language === 'pt' ? 'Explorar Tours' : 'Explore Tours'}
-        </button>
-        
-        </aside>
-    )
-  }
+  
   
 
   return (
@@ -973,12 +937,6 @@ function CartPage({ cart, removeFromCart, updateQuantity}) {
                 {getTotalItems()} {language === 'pt' ? 'itens' : 'items'}
               </div>
             </div>
-             <button 
-              onClick={() => navigate('/')}
-              className="continue-shopping-header-btn"
-            >
-              {language === 'pt' ? 'Continuar Comprando' : 'Continue Shopping'}
-            </button>
           </div>
         </div>
 
@@ -996,6 +954,22 @@ function CartPage({ cart, removeFromCart, updateQuantity}) {
                   ? 'Adicione alguns itens incríveis para começar sua aventura em Orlando!'
                   : 'Add some amazing items to start your Orlando adventure!'}
               </p>
+              <button
+      type="button"
+      onClick={() => window.open(waCartUrl, "_blank")}
+      disabled={!hasItems}
+      className={`
+        whatsapp-button
+        ${hasItems 
+          ? "hover:bg-green-600" 
+          : "cursor-not-allowed opacity-50"
+        }
+      `}
+    >
+      {language === 'pt'
+        ? 'Enviar Pedido por WhatsApp'
+        : 'Submit request via WhatsApp'}
+    </button>
               <button
                 onClick={() => navigate('/tours')}
                 className="continue-shopping-btn"

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, useLocation , useNavigate } from 'react-router-dom'
 import { Button } from "./components/ui/button";
-import DetailsModal from './components/ui/DetailsModal'
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
 import { Input } from "./components/ui/input";
 import { Badge } from "./components/ui/badge";
@@ -13,10 +11,13 @@ import { Elements } from '@stripe/react-stripe-js'
 import { ShoppingCart, Star, Search, MapPin, Clock, DollarSign, Users, Globe, Menu, X } from 'lucide-react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, { Navigation, Pagination, Autoplay } from 'swiper'
+import { DetailsPage } from './components/ui/DetailsPage'
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import './App.css'
+import DetailsModal from './components/ui/DetailsModal'
+import FilterablePage from './components/ui/FilterablePage'
 import CheckoutForm from './components/ui/CheckoutForm'
 import CheckoutWithPaymentElement from "./components/ui/CheckoutWithPaymentElement";
 import ChatButton from './components/ui/ChatButton'
@@ -42,11 +43,13 @@ function App() {
   const [modalItem, setModalItem] = useState(null)
   const showDetails = item => setModalItem(item)
   const hideDetails = () => setModalItem(null)
- 
+  
+  const backgroundLocation = location.state?.backgroundLocation
   const [language, setLanguage] = useState('pt')
   const [cart, setCart] = useState([])
   const [isKioskMode, setIsKioskMode] = useState(false)
- 
+  const state = location.state 
+  
 
   useEffect(() => {
     // Check if running in kiosk mode (fullscreen)
@@ -108,10 +111,10 @@ function App() {
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>
-      <Router>
+      <Router location={backgroundLocation || location} >
         <div className={`min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 ${isKioskMode ? 'kiosk-mode' : ''}`}>
           <Header cart={cart} />
-          <Routes>
+          <Routes >
             <Route path="/" element={<HomePage />} />
             <Route path="/tours" element={<ToursPage addToCart={addToCart} onShowDetails={showDetails} />} />
             <Route path="/restaurants" element={<RestaurantsPage addToCart={addToCart} onShowDetails={showDetails} />} />
@@ -123,6 +126,7 @@ function App() {
                 />
               }
             />
+            <Route path="/details/:id" element={<DetailsPage />} />
             <Route path="/water-parks" element={<CategoryPage data={waterParksData} title="Parques Aquáticos" titleEn="Water Parks" addToCart={addToCart} onShowDetails={showDetails} />} />
             <Route path="/nightlife" element={<CategoryPage data={nightlifeData} title="Vida Noturna" titleEn="Nightlife" addToCart={addToCart} onShowDetails={showDetails} />} />
             <Route
@@ -138,6 +142,10 @@ function App() {
                 </Elements>
               }
             />
+            <Route 
+            path="/details/:id" 
+            element={<DetailsPage isModal onClose={() => window.history.back()} />} 
+          />
           </Routes>
           
         </div>
@@ -150,6 +158,11 @@ function App() {
         )}
 
          <ChatButton />
+         {backgroundLocation && (
+        <Routes>
+          <Route path="/details/:id" element={<DetailsPage addToCart={addToCart} isModal />} />
+        </Routes>
+      )}
 
     </LanguageContext.Provider>
   )
@@ -294,6 +307,76 @@ function HomePage() {
           </button>
         </div>
       </section>
+    
+      <section className="video-hero relative w-full overflow-hidden rounded-lg shadow-lg">		
+        <video
+          className="video-hero__video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="https://assets.simpleviewinc.com/simpleview/image/upload/q_60,w_1200/v1/clients/orlandofl-redesign/172099_the_wheel_nighttime_4_8c50349b-aa73-4d0f-956e-6dc7f667cc41.jpg" // substitua se quiser poster
+        >
+          <source src="https://visitorlando.widen.net/content/cexgwbjkgu/mp4/New-Leisure-Site-Homepage-Video_JAN2025_v2.mp4?quality=hd&amp;u=opascz&amp;use=u3ch" type="video/mp4" />
+          
+          {language === 'pt'
+            ? 'Seu navegador não suporta vídeo.'
+            : 'Your browser does not support video.'}
+        </video>
+        <div className="video-hero__overlay">
+        <div className="video-hero__content">
+          <h2 className="video-hero__title">
+            {language === 'pt' ? 'Viva Orlando como nunca antes' : 'Experience Orlando like never before'}
+          </h2>
+          <p className="video-hero__subtitle">
+            {language === 'pt'
+              ? 'Planejamos sua viagem com os melhores passeios, restaurantes e entretenimento.'
+              : "We craft your trip with the top tours, dining and entertainment."}
+          </p>
+          <button
+            onClick={() => navigate('/tours')}
+            className="video-hero__cta-transparent"
+          >
+            {language === 'pt' ? 'Começar Agora' : 'Start Now'}
+          </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Sobre Nós */}
+      <section className="about-section bg-white rounded-lg shadow-md p-8">
+        <div className="about-content max-w-4xl mx-auto flex flex-col md:flex-row gap-8">
+          <div className="about-text md:w-1/2">
+            <h2 className="about-title text-3xl font-bold mb-4">
+              {language === 'pt' ? 'Sobre Nós' : 'About Us'}
+            </h2>
+            <p className="about-paragraph text-gray-700 mb-3">
+              {language === 'pt'
+                ? 'A Experience Florida é sua porta de entrada para vivenciar o melhor de Orlando. Com seleção cuidadosa de tours, restaurantes e atrações, fazemos sua jornada mais simples, divertida e inesquecível.'
+                : 'Experience Florida is your gateway to enjoying the best of Orlando. With curated tours, restaurants, and attractions, we make your journey easier, more fun, and unforgettable.'}
+            </p>
+            <p className="about-paragraph text-gray-700 mb-3">
+              {language === 'pt'
+                ? 'Nosso time conhece a cidade como ninguém e está comprometido em oferecer opções autênticas e personalizadas que combinam com o seu estilo de viagem.'
+                : 'Our team knows the city inside out and is committed to delivering authentic, personalized experiences that match your travel style.'}
+            </p>
+            <p className="about-paragraph text-gray-700">
+              {language === 'pt'
+                ? 'Seja sua primeira visita ou um retorno, estamos aqui para transformar cada momento em uma memória incrível.'
+                : 'Whether it’s your first visit or a return trip, we are here to turn every moment into an amazing memory.'}
+            </p>
+          </div>
+         {/* <div className="md:w-1/2 flex items-center justify-center">
+            
+            <img
+              src="/about-us-photo.jpg"
+              alt="Sobre nós"
+              className="rounded-lg object-cover w-full h-64 md:h-full"
+            />
+          </div>*/}
+        </div>
+      </section>
+  
 
       {/* Quick Search Cards */}
       <section className="mb-16">
@@ -422,55 +505,95 @@ function HomePage() {
 }
 
 // Generic Category Page Component
-function CategoryPage({ data, title, titleEn, addToCart }) {
+export function CategoryPage({ data, title, titleEn, addToCart, onShowDetails }) {
   const { language } = useContext(LanguageContext)
+  const navigate = useNavigate()
+
+  // estados
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
   const [filteredData, setFilteredData] = useState(data)
 
+  // extrai categorias únicas pra dropdown
+  const categories = [...new Set(data.map(item => item.category))]
+
   useEffect(() => {
-    const filtered = data.filter(item => {
-      const name = language === 'pt' ? item.name : item.name_en
-      const description = language === 'pt' ? item.description : item.description_en
-      const searchLower = searchTerm.toLowerCase()
-      
-      return name.toLowerCase().includes(searchLower) || 
-             description.toLowerCase().includes(searchLower) ||
-             item.location.toLowerCase().includes(searchLower)
-    })
+    let filtered = data
+
+    // filtro de busca livre
+    if (searchTerm) {
+      const lower = searchTerm.toLowerCase()
+      filtered = filtered.filter(item => {
+        const name        = language === 'pt' ? item.name : item.name_en
+        const description = language === 'pt'
+          ? item.description
+          : item.description_en
+        return (
+          name.toLowerCase().includes(lower) ||
+          description.toLowerCase().includes(lower) ||
+          item.location.toLowerCase().includes(lower)
+        )
+      })
+    }
+
+    // filtro de categoria
+    if (selectedCategory) {
+      filtered = filtered.filter(item => item.category === selectedCategory)
+    }
+
     setFilteredData(filtered)
-  }, [searchTerm, data, language])
+  }, [searchTerm, selectedCategory, data, language])
 
   return (
     <main className="page-container">
-      <div className="page-header">
-        <h1 className="page-title">
+      <div className="page-header flex flex-col md:flex-row md:justify-between items-start md:items-center mb-6">
+        <h1 className="page-title text-2xl font-bold mb-4 md:mb-0">
           {language === 'pt' ? title : titleEn}
         </h1>
-        
-        <div className="search-container">
+        <div className="search-filters flex space-x-2 w-full md:w-auto">
           <input
             type="text"
-            placeholder={language === 'pt' ? 'Buscar tours...' : 'Search tours...'}
+            placeholder={language === 'pt' ? 'Buscar...' : 'Search...'}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            onChange={e => setSearchTerm(e.target.value)}
+            className="search-input flex-1 border rounded p-2"
           />
+          <select
+            value={selectedCategory}
+            onChange={e => setSelectedCategory(e.target.value)}
+            className="filter-select border rounded p-2"
+          >
+            <option value="">
+              {language === 'pt'
+                ? 'Todas as categorias'
+                : 'All categories'}
+            </option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      <div className="items-grid">
-        {filteredData.map((item) => (
-          <ItemCard key={item.id} item={item} addToCart={addToCart} />
+      <div className="items-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredData.map(item => (
+          <ItemCard
+            key={item.id}
+            item={item}
+            addToCart={addToCart}
+            onShowDetails={onShowDetails}
+          />
         ))}
       </div>
 
       {filteredData.length === 0 && (
-        <div className="no-results">
-          <p>
-            {language === 'pt' 
+        <div className="no-results text-center mt-12">
+          <p className="text-gray-600">
+            {language === 'pt'
               ? 'Nenhum resultado encontrado para sua busca.'
-              : 'No results found for your search.'
-            }
+              : 'No results found for your search.'}
           </p>
         </div>
       )}
@@ -478,119 +601,55 @@ function CategoryPage({ data, title, titleEn, addToCart }) {
   )
 }
 
-// Tours Page Component
-function ToursPage({ addToCart,onShowDetails }) {
-  const { language } = useContext(LanguageContext)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
-  const [filteredTours, setFilteredTours] = useState(toursData)
+// ------------------------------------------------------------------
 
-  const categories = [...new Set(toursData.map(tour => tour.category))]
-
-  useEffect(() => {
-    let filtered = toursData
-
-    if (searchTerm) {
-      filtered = filtered.filter(tour => {
-        const name = language === 'pt' ? tour.name : tour.name_en
-        const description = language === 'pt' ? tour.description : tour.description_en
-        const searchLower = searchTerm.toLowerCase()
-        
-        return name.toLowerCase().includes(searchLower) || 
-               description.toLowerCase().includes(searchLower) ||
-               tour.location.toLowerCase().includes(searchLower)
-      })
-    }
-
-    if (selectedCategory) {
-      filtered = filtered.filter(tour => tour.category === selectedCategory)
-    }
-
-    setFilteredTours(filtered)
-  }, [searchTerm, selectedCategory, language])
-
+export function ToursPage({ addToCart, onShowDetails }) {
+  // basta delegar pro CategoryPage passando o dataset e os títulos certos
   return (
-    <main className="page-container">
-      <div className="page-header">
-        <h1 className="page-title">
-          {language === 'pt' ? 'Tours em Orlando' : 'Tours in Orlando'}
-        </h1>
-        
-        
-        <div className="search-filters">
-          <input
-            type="text"
-            placeholder={language === 'pt' ? 'Buscar tours...' : 'Search tours...'}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          
-          <select
-  value={selectedCategory}
-  onChange={e => setSelectedCategory(e.target.value)}
-  className="filter-select"
->
-  <option key="all-categories" value="">
-    {language === 'pt' ? 'Todas as categorias' : 'All categories'}
-  </option>
-  {categories.map(category => (
-    <option key={category} value={category}>
-      {category}
-    </option>
-  ))}
-</select>
-
-        </div>
-      </div>
-
-      <div className="items-grid">
-        {filteredTours.map((tour) => (
-          <ItemCard key={tour.id} item={tour} addToCart={addToCart}  onShowDetails={onShowDetails}  />
-        ))}
-      </div>
-
-      {filteredTours.length === 0 && (
-        <div className="no-results">
-          <p>
-            {language === 'pt' 
-              ? 'Nenhum tour encontrado para sua busca.'
-              : 'No tours found for your search.'
-            }
-          </p>
-        </div>
-      )}
-    </main>
+    <CategoryPage
+      data={toursData}
+      title="Tours em Orlando"
+      titleEn="Tours in Orlando"
+      addToCart={addToCart}
+      onShowDetails={onShowDetails}
+    />
   )
 }
 
 // Restaurants Page Component
-function RestaurantsPage({ addToCart }) {
+ function RestaurantsPage({ addToCart, onShowDetails }) {
   const { language } = useContext(LanguageContext)
+  const navigate = useNavigate()
+
+  // Estado do filtro
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCuisine, setSelectedCuisine] = useState('')
   const [filteredRestaurants, setFilteredRestaurants] = useState(restaurantsData)
 
-  const cuisines = [...new Set(restaurantsData.map(restaurant => restaurant.cuisine))]
+  // Lista de cozinhas pro dropdown
+  const cuisines = [...new Set(restaurantsData.map(r => r.cuisine))]
 
   useEffect(() => {
     let filtered = restaurantsData
 
+    // filtro de busca livre
     if (searchTerm) {
-      filtered = filtered.filter(restaurant => {
-        const name = language === 'pt' ? restaurant.name : restaurant.name_en
-        const description = language === 'pt' ? restaurant.description : restaurant.description_en
-        const searchLower = searchTerm.toLowerCase()
-        
-        return name.toLowerCase().includes(searchLower) || 
-               description.toLowerCase().includes(searchLower) ||
-               restaurant.location.toLowerCase().includes(searchLower) ||
-               restaurant.cuisine.toLowerCase().includes(searchLower)
+      const lower = searchTerm.toLowerCase()
+      filtered = filtered.filter(r => {
+        const name        = language === 'pt' ? r.name : r.name_en
+        const description = language === 'pt' ? r.description : r.description_en
+        return (
+          name.toLowerCase().includes(lower) ||
+          description.toLowerCase().includes(lower) ||
+          r.location.toLowerCase().includes(lower) ||
+          r.cuisine.toLowerCase().includes(lower)
+        )
       })
     }
 
+    // filtro de cozinha
     if (selectedCuisine) {
-      filtered = filtered.filter(restaurant => restaurant.cuisine === selectedCuisine)
+      filtered = filtered.filter(r => r.cuisine === selectedCuisine)
     }
 
     setFilteredRestaurants(filtered)
@@ -598,52 +657,55 @@ function RestaurantsPage({ addToCart }) {
 
   return (
     <main className="page-container">
-      <div className="page-header">
-        <h1 className="page-title">
+      {/* Cabeçalho com título + filtros */}
+      <div className="page-header flex flex-col md:flex-row md:justify-between items-start md:items-center mb-6">
+        <h1 className="page-title text-2xl font-bold mb-4 md:mb-0">
           {language === 'pt' ? 'Restaurantes em Orlando' : 'Restaurants in Orlando'}
         </h1>
-        
-        <div className="search-filters">
+        <div className="search-filters flex space-x-2 w-full md:w-auto">
           <input
             type="text"
             placeholder={language === 'pt' ? 'Buscar restaurantes...' : 'Search restaurants...'}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+            onChange={e => setSearchTerm(e.target.value)}
+            className="search-input flex-1 border rounded p-2"
           />
-          
           <select
-  value={selectedCuisine}
-  onChange={e => setSelectedCuisine(e.target.value)}
-  className="filter-select"
->
-  <option key="all-cuisines" value="">
-    {language === 'pt' ? 'Todas as cozinhas' : 'All cuisines'}
-  </option>
-  {cuisines.map(cuisine => (
-    <option key={cuisine} value={cuisine}>
-      {cuisine}
-    </option>
-  ))}
-</select>
-
+            value={selectedCuisine}
+            onChange={e => setSelectedCuisine(e.target.value)}
+            className="filter-select border rounded p-2"
+          >
+            <option value="">
+              {language === 'pt' ? 'Todas as cozinhas' : 'All cuisines'}
+            </option>
+            {cuisines.map(c => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
-      
 
-      <div className="items-grid">
-        {filteredRestaurants.map((restaurant) => (
-          <ItemCard key={restaurant.id} item={restaurant} addToCart={addToCart}  />
+      {/* Grid de cards */}
+      <div className="items-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredRestaurants.map(item => (
+          <ItemCard
+            key={item.id}
+            item={item}
+            addToCart={addToCart}
+            onShowDetails={onShowDetails}
+          />
         ))}
       </div>
 
+      {/* Mensagem “nenhum resultado” */}
       {filteredRestaurants.length === 0 && (
-        <div className="no-results">
-          <p>
-            {language === 'pt' 
+        <div className="no-results text-center mt-12">
+          <p className="text-gray-600">
+            {language === 'pt'
               ? 'Nenhum restaurante encontrado para sua busca.'
-              : 'No restaurants found for your search.'
-            }
+              : 'No restaurants found for your search.'}
           </p>
         </div>
       )}
@@ -661,18 +723,16 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
   const navigate = useNavigate()
   const hasItems = cart.length > 0;
 
-  
-
-
-
   // Calcular totais e moeda
-  const subtotal = cart.reduce((sum, item) => {
-    const price = typeof item.price === 'number'
-      ? item.price
-      : parseFloat(item.price) || 0
+  const getTotalPrice = () =>
+  cart.reduce((sum, item) => {
+    const price =
+      typeof item.price === 'number'
+        ? item.price
+        : parseFloat(item.price) || 0
     return sum + price * item.quantity
   }, 0)
-
+  const subtotal = getTotalPrice()
   const serviceFee = subtotal * 0.05
   const total = subtotal + serviceFee
   const stripeCurrency = language === 'pt' ? 'brl' : 'usd'
@@ -685,6 +745,9 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
   // Estado do checkout e PaymentIntent
   const [step, setStep] = useState('form') // 'form' ou 'payment'
   const [clientSecret, setClientSecret] = useState(null)
+  const getTotalItems = () =>
+  cart.reduce((sum, item) => sum + item.quantity, 0)
+
 
   // Enviar formulário e criar PaymentIntent
   const handleSendForm = async () => {
@@ -719,28 +782,29 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
   // Se carrinho vazio, mostrar estado
   if (cart.length === 0) {
     return (
-      <main className="cart-page flex flex-col items-center justify-center p-8">
+      <aside className="order-summary-section p-6 border rounded-lg space-y-4">
         <ShoppingCart className="w-16 h-16 text-gray-400 mb-4" />
         <h2 className="text-2xl font-semibold mb-2">
           {language === 'pt' ? 'Seu carrinho está vazio' : 'Your cart is empty'}
         </h2>
 
         {/* Botão WhatsApp — só aparece / fica habilitado quando tiver itens */}
-<button
-  type="button"
-  onClick={() => window.open(waCartUrl, "_blank", "noopener,noreferrer")}
-  disabled={!hasItems}
-  className={
-    `w-full block text-center py-3 rounded
-     ${hasItems
-       ? "bg-green-500 hover:bg-green-600 text-white"
-       : "bg-gray-300 text-gray-600 cursor-not-allowed"}`
-  }
->
-  {language === 'pt'
-    ? 'Enviar Pedido por WhatsApp'
-    : 'Submit request via WhatsApp'}
-</button>
+        <button
+      type="button"
+      onClick={() => window.open(waCartUrl, "_blank")}
+      disabled={!hasItems}
+      className={`
+        whatsapp-button
+        ${hasItems 
+          ? "hover:bg-green-600" 
+          : "cursor-not-allowed opacity-50"
+        }
+      `}
+    >
+      {language === 'pt'
+        ? 'Enviar Pedido por WhatsApp'
+        : 'Submit request via WhatsApp'}
+    </button>
 
 
         <button
@@ -750,327 +814,279 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
           {language === 'pt' ? 'Explorar Tours' : 'Explore Tours'}
         </button>
         
-      </main>
+        </aside>
     )
   }
-
-  return (
-    <main className="cart-page max-w-6xl mx-auto p-6 md:flex md:space-x-6">
-      {/* Itens do carrinho */}
-      <section className="md:w-3/5 space-y-4">
-        {cart.map(item => {
-          const price = typeof item.price === 'number' ? item.price : parseFloat(item.price) || 0
-          return (
-            <div key={item.id} className="flex items-center bg-white p-4 rounded shadow">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-24 h-24 object-cover rounded mr-4"
-              />
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold">
-                  {language === 'pt' ? item.name : item.name_en}
-                </h3>
-                <p className="text-gray-600 text-sm mt-1">
-                  {language === 'pt' ? item.description : item.description_en}
-                </p>
-                <div className="flex items-center mt-2 space-x-2">
-                  <button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    disabled={item.quantity <= 1}
-                    className="px-2 bg-gray-200 rounded hover:bg-gray-300"
-                  >−</button>
-                  <span>{item.quantity}</span>
-                  <button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    className="px-2 bg-gray-200 rounded hover:bg-gray-300"
-                  >＋</button>
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="ml-4 text-red-500 hover:text-red-700"
-                  >
-                    Remover
-                  </button>
-                </div>
-              </div>
-              <span className="font-semibold">
-                ${(price * item.quantity).toFixed(2)}
-              </span>
-            </div>
-          )
-        })}
-      </section>
-
-      {/* Resumo e checkout */}
-      <aside className="md:w-2/5 bg-gray-50 p-6 rounded-lg shadow space-y-6">
-        <h2 className="text-2xl font-semibold">
-          {language === 'pt' ? 'Resumo do Pedido' : 'Order Summary'}
-        </h2>
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <span>{language === 'pt' ? 'Subtotal' : 'Subtotal'}</span>
-            <span>${subtotal.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>{language === 'pt' ? 'Taxa de Serviço' : 'Service Fee'}</span>
-            <span>${serviceFee.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between font-bold text-lg">
-            <span>{language === 'pt' ? 'Total' : 'Total'}</span>
-            <span>${total.toFixed(2)}</span>
-          </div>
-        </div>
-
-        {/* Formulário de dados */}
-        {step === 'form' && (
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder={language === 'pt' ? 'Nome' : 'Name'}
-              value={form.name}
-              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full p-2 border rounded"
-            />
-            <input
-              type="email"
-              placeholder="E-mail"
-              value={form.email}
-              onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-              className="w-full p-2 border rounded"
-            />
-            <input
-              type="tel"
-              placeholder={language === 'pt' ? 'Telefone' : 'Phone'}
-              value={form.phone}
-              onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-              className="w-full p-2 border rounded"
-            />
-            <button
-              onClick={handleSendForm}
-              disabled={!isFormValid}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded disabled:opacity-50"
-            >
-              {language === 'pt' ? 'Prosseguir para pagamento' : 'Proceed to payment'}
-            </button>
-          </div>
-        )}
-
-        {/* Stripe Payment */}
-        {step === 'payment' && clientSecret && (
-          <Elements stripe={stripePromise} options={{ clientSecret, locale }}>
-            <CheckoutWithPaymentElement />
-          </Elements>
-        )}
-
-        <button
-          onClick={() => navigate('/')}
-          className="w-full text-center text-gray-700 hover:underline"
-        >
-          {language === 'pt' ? 'Continuar Comprando' : 'Continue Shopping'}
-        </button>
-      </aside>
-    </main>
-  )
-}
-
-
-
-
-// Cart Item Component
-function CartItem({ item, removeFromCart, updateQuantity }) {
-  const { language } = useContext(LanguageContext) 
-  const name = language === 'pt' ? item.name : item.name_en
-  const description = language === 'pt' ? item.description : item.description_en
-  const raw = item.price;
-  const price = typeof raw === 'number'
-  ? raw
-    : parseFloat(String(raw).replace('$', '')) || 0;
-  const imageUrl = item.image
-  return (
-    <div className="cart-item">
-      <div className="cart-item-image">
-        {imageUrl
-          ? <img
-              src={imageUrl}
-              alt={name}
-              className="w-32 h-24 object-cover rounded"
-            />
-          : (
-            <div className="cart-item-placeholder">
-              <span className="block text-sm text-gray-600">
-          {language === 'pt' ? 'Preço unitário:' : 'Unit price:'}
-        </span>
-        <span className="text-lg font-bold">${price.toFixed(2)}</span>
-      </div>
-          )
-        }
-      </div>
-
   
 
-    {/* Detalhes do item */}
-    <div className="cart-item-details flex-1 flex flex-col justify-between">
-      <div>
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-semibold">{name}</h3>
-          <div className="flex items-center space-x-1 text-yellow-500">
-            <Star size={16} />
-            <span>{item.rating}</span>
+  return (
+    <main className="cart-page">
+      <div className="cart-container">
+        <div className="cart-header">
+          <div className="cart-header-content">
+            <div className="cart-title-section">
+              <h1 className="cart-title">
+                <ShoppingCart className="cart-title-icon" />
+                {language === 'pt' ? 'Seu Carrinho' : 'Your Cart'}
+              </h1>
+              <div className="cart-items-count">
+                {getTotalItems()} {language === 'pt' ? 'itens' : 'items'}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="text-sm text-gray-600 mb-2">
-          <MapPin size={14} className="inline-block mr-1" />
-          {item.location}
-        </div>
-        {item.hours && (
-          <div className="text-sm text-gray-600 mb-2">
-            <Clock size={14} className="inline-block mr-1" />
-            {item.hours}
+        {cart.length === 0 ? (
+          <div className="empty-cart">
+            <div className="empty-cart-content">
+              <div className="empty-cart-icon">🛒</div>
+              <h2 className="empty-cart-title">
+                {language === 'pt'
+                  ? 'Seu carrinho está vazio'
+                  : 'Your cart is empty'}
+              </h2>
+              <p className="empty-cart-text">
+                {language === 'pt'
+                  ? 'Adicione alguns itens incríveis para começar sua aventura em Orlando!'
+                  : 'Add some amazing items to start your Orlando adventure!'}
+              </p>
+              <button
+                onClick={() => navigate('/tours')}
+                className="continue-shopping-btn"
+              >
+                {language === 'pt' ? 'Explorar Tours' : 'Explore Tours'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="cart-content">
+            <div className="cart-items-section">
+              <h2 className="cart-section-title">
+                {language === 'pt' ? 'Itens do Carrinho' : 'Cart Items'}
+              </h2>
+              <div className="cart-items-list">
+                {cart.map(item => (
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    removeFromCart={removeFromCart}
+                    updateQuantity={updateQuantity}
+                    language={language}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="cart-summary">
+              <div className="summary-item">
+                <span>{language === 'pt' ? 'Subtotal:' : 'Subtotal:'}</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="summary-item">
+                <span>
+                  {language === 'pt' ? 'Taxa de Serviço:' : 'Service Fee:'}
+                </span>
+                <span>${serviceFee.toFixed(2)}</span>
+              </div>
+              <div className="summary-total">
+                <span>{language === 'pt' ? 'Total:' : 'Total:'}</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+
+              {step === 'form' && (
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder={language === 'pt' ? 'Nome' : 'Name'}
+                    value={form.name}
+                    onChange={e =>
+                      setForm(f => ({ ...f, name: e.target.value }))
+                    }
+                    className="w-full p-2 border rounded"
+                  />
+                  <input
+                    type="email"
+                    placeholder="E-mail"
+                    value={form.email}
+                    onChange={e =>
+                      setForm(f => ({ ...f, email: e.target.value }))
+                    }
+                    className="w-full p-2 border rounded"
+                  />
+                  <input
+                    type="tel"
+                    placeholder={language === 'pt' ? 'Telefone' : 'Phone'}
+                    value={form.phone}
+                    onChange={e =>
+                      setForm(f => ({ ...f, phone: e.target.value }))
+                    }
+                    className="w-full p-2 border rounded"
+                  />
+                  <button
+                    onClick={handleSendForm}
+                    disabled={!isFormValid}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded disabled:opacity-50"
+                  >
+                    {language === 'pt'
+                      ? 'Prosseguir para pagamento'
+                      : 'Proceed to payment'}
+                  </button>
+                </div>
+              )}
+
+              {step === 'payment' && clientSecret && (
+                <Elements
+                  stripe={stripePromise}
+                  options={{ clientSecret, locale }}
+                >
+                  <CheckoutWithPaymentElement />
+                </Elements>
+              )}
+
+              <button
+                className="continue-shopping-button"
+                onClick={() => navigate('/')}
+              >
+                {language === 'pt'
+                  ? 'Continuar Comprando'
+                  : 'Continue Shopping'}
+              </button>
+            </div>
           </div>
         )}
-
-        <p className="text-sm text-gray-700 mb-4">{description}</p>
       </div>
-
-      <div className="flex justify-between items-center">
-        <div>
-          <span className="block text-sm text-gray-600">
-            {language === 'pt' ? 'Preço unitário:' : 'Unit price:'}
-          </span>
-          <span className="text-lg font-bold">${price.toFixed(2)}</span>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center ">
-            <button
-              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-              disabled={item.quantity <= 1}
-              className="quantity-btn"
-            >−</button>
-            <span className="quantity-controls">{item.quantity}</span>
-            <button
-              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-              className="quantity-btn"
-            >＋</button>
-          </div>
-
-          <button
-            onClick={() => removeFromCart(item.id)}
-            className="remove-item-btn"
-            title={language === 'pt' ? 'Remover item' : 'Remove item'}
-          >
-            <X size={20} />
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-4 text-right">
-        <span className="text-sm text-gray-600">
-          {language === 'pt' ? 'Subtotal:' : 'Subtotal:'}
-        </span>
-        <span className="block text-lg font-semibold">
-          ${(price * item.quantity).toFixed(2)}
-        </span>
-      </div>
-    </div>
-  </div>
-)
+    </main>
+  );
 }
 
-// Item Card Component
-function ItemCard({ item, addToCart,onShowDetails  }) {
-  const { language } = useContext(LanguageContext)
 
-  const name = language === 'pt' ? item.name : item.name_en
-  const description = language === 'pt' ? item.description : item.description_en
-  const price = item.price || '$0.00'
+
+
+function ItemCard({ item, addToCart,removeFromCart,updateQuantity }) {
+  const { language } = useContext(LanguageContext);
+
+  const name = language === "pt" ? item.name : item.name_en;
+  const description =
+    language === "pt" ? item.description : item.description_en;
+  const price = item.price || "0.00";
+  const navigate = useNavigate()
+  const location = useLocation()
+  const id = item.id
+  const bg = location.pathname + location.search
+  const handleOpenModal = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    navigate(`/details/${item.id}`, {
+      state: { backgroundLocation: location, language }
+    })
+  }
+
   const waText = encodeURIComponent(
-    `${language === 'pt' ? 'Olá, tenho interesse no tuor para :' : 'Hi, I’d like more info about:'} ${name} – R$${price}`
-  )
-  const waUrl = `https://wa.me/${WA_NUMBER}?text=${waText}`
-  // monta o array de imagens a partir de gallery ou image único
+    `${language === "pt" ? "Olá, tenho interesse em:" : "Hi, I’d like info on:"} ${name} – R$${price}`
+  );
+  const waUrl = `https://wa.me/${WA_NUMBER}?text=${waText}`;
+
   const images = item.gallery?.length
-  ? item.gallery
-  : item.image
+    ? item.gallery
+    : item.image
     ? [item.image]
     : [];
 
-return (
-  <div className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm"  onClick={() => onShowDetails(item)}>
-  {/* === CARROSSEL DE IMAGENS === */}
-  <div className="service-image-container">
-  
-    <Swiper
-      modules={[Navigation, Pagination, Autoplay]}
-      navigation
-      pagination={{ clickable: true }}
-      autoplay={{ delay: 3000 }}
-      loop
+  return (
+    <div onClick={handleOpenModal}>
+    <Link
+      to="/details"
+      state={{ item }}
+      className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm"
     >
-      {images.length > 0
-        ? images.map((src, idx) => (
-            <SwiperSlide key={idx}>
-              <img
-                src={src}
-                alt={`${name} ${idx + 1}`}
-                className="w-full h-full"
-              />
-            </SwiperSlide>
-          ))
-        : (
-            <SwiperSlide>
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-4xl font-bold">{name.charAt(0)}</span>
-              </div>
-            </SwiperSlide>
-          )
-      }
-    </Swiper>
-  
+      {/* Carousel */}
+      <div className="service-image-container">
+        <Swiper
+          navigation
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 3000 }}
+          loop
+        >
+          {images.length > 0
+            ? images.map((src, idx) => (
+                <SwiperSlide key={idx}>
+                  <img
+                    src={src}
+                    alt={`${name} ${idx + 1}`}
+                    className="w-full h-48 object-cover"
+                  />
+                </SwiperSlide>
+                
+              ))
+            : (
+                <SwiperSlide>
+                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                    <span className="text-4xl font-bold">
+                      {name.charAt(0)}
+                    </span>
+                  </div>
+                </SwiperSlide>
+              )}
+        </Swiper>
+      </div>
+      
 
-    {/* === CONTEÚDO DO CARD === */}
-    <div className="service-content p-4 flex flex-col" onClick={() => onShowDetails(item)}>
-      {/* ... resto do card ... */}
-    </div>
-  </div>
-
-
-
-      {/* === CONTEÚDO DO CARD === */}
+      {/* Conteúdo */}
       <div className="service-content flex-1 p-4 flex flex-col justify-between">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="service-title text-lg font-semibold">{name}</h3>
+          <h3 className="service-title text-lg font-semibold">
+            {name}
+          </h3>
           <span className="service-rating bg-yellow-400 text-white px-2 rounded">
             ⭐ {item.rating}
           </span>
+
+          <p className="text-sm text-gray-700 mb-4 ">
+            {description}
+          </p>
+          {item.hours && (
+            <p className="service-duration text-sm text-gray-600 mb-4">
+              🕒 {item.hours}
+            </p>
+          )}
+          <div className="service-price text-lg font-bold">
+            R${price}
+          </div>
         </div>
 
-        <p className="text-sm text-gray-700 flex-1 mb-4">{description}</p>
-        {item.hours && (
-          <div className="service-duration text-sm text-gray-600 mb-4">
-            🕒 {item.hours}
-          </div>
-        )}
+        {/* Botões */}
+        <div className="mt-4 flex space-x-2">
+          <button
+            type="button"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              addToCart(item);
+            }}
+            className="service-add-button bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          >
+            {language === "pt" ? "Adicionar ao Carrinho" : "Add to Cart"}
+          </button>
 
-        <div className="service-price text-lg font-bold mb-4">R${price}</div>
-
-        <button
-          onClick={() => addToCart(item)}
-          className="service-add-button bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          {language === 'pt' ? 'Adicionar ao Carrinho' : 'Add to Cart'}
-        </button>
-        <button
-           type="button"
-            onClick={() => window.open(waUrl, "_blank", "noopener,noreferrer")}
-           className="service-whatsapp-button bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-            >
-  {language === 'pt' ? 'Agendar via WhatsApp' : 'Schedule via WhatsApp'}
-</button>
-
+          <button
+            type="button"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(waUrl, "_blank", "noopener,noreferrer");
+            }}
+            className="service-whatsapp-button bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+          >
+            {language === "pt"
+              ? "Agendar via WhatsApp"
+              : "Schedule via WhatsApp"}
+          </button>
+        </div>
       </div>
+    </Link>
     </div>
-  )
+  );
+
 }
+
 export default App

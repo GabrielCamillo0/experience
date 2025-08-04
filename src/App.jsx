@@ -102,12 +102,19 @@ function App() {
     return cart.reduce((total, item) => total + item.quantity, 0)
   }
 
-  const getTotalPrice = () => {
-    return cart.reduce((total, item) => {
-      const price = parseFloat(item.price?.replace('$', '') || '0')
-      return total + (price * item.quantity)
-    }, 0)
-  }
+  const getTotalPrice = () =>
+  cart.reduce((sum, item) => {
+    let price = 0;
+
+    if (typeof item.price === 'number') {
+      price = item.price;
+    } else if (typeof item.price === 'string') {
+      // remove qualquer caractere que não seja dígito, ponto ou hífen
+      price = parseFloat(item.price.replace(/[^0-9.-]+/g, '')) || 0;
+    }
+
+    return sum + price * item.quantity;
+  }, 0);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage }}>
@@ -657,23 +664,23 @@ export function ToursPage({ addToCart, onShowDetails }) {
 
   return (
     <main className="page-container">
-      {/* Cabeçalho com título + filtros */}
-      <div className="page-header flex flex-col md:flex-row md:justify-between items-start md:items-center mb-6">
-        <h1 className="page-title text-2xl font-bold mb-4 md:mb-0">
+      
+      <div className="page-header">
+        <h1 className="page-title">
           {language === 'pt' ? 'Restaurantes em Orlando' : 'Restaurants in Orlando'}
         </h1>
-        <div className="search-filters flex space-x-2 w-full md:w-auto">
+        <div className="search-filters">
           <input
             type="text"
             placeholder={language === 'pt' ? 'Buscar restaurantes...' : 'Search restaurants...'}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="search-input flex-1 border rounded p-2"
+            className="search-input"
           />
           <select
             value={selectedCuisine}
             onChange={e => setSelectedCuisine(e.target.value)}
-            className="filter-select border rounded p-2"
+            className="filter-select"
           >
             <option value="">
               {language === 'pt' ? 'Todas as cozinhas' : 'All cuisines'}
@@ -688,7 +695,7 @@ export function ToursPage({ addToCart, onShowDetails }) {
       </div>
 
       {/* Grid de cards */}
-      <div className="items-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="items-grid">
         {filteredRestaurants.map(item => (
           <ItemCard
             key={item.id}
@@ -713,25 +720,158 @@ export function ToursPage({ addToCart, onShowDetails }) {
   )
 }
 
+function ItemCard({ item, addToCart}) {
+  const { language } = useContext(LanguageContext);
 
+  const name = language === "pt" ? item.name : item.name_en;
+  const description =language === "pt" ? item.description : item.description_en;
+  const price = item.price || "0.00";
+  const navigate = useNavigate()
+  const location = useLocation()
+  const id = item.id
+  const bg = location.pathname + location.search
+  const handleOpenModal = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    navigate(`/details/${item.id}`, {
+      state: { backgroundLocation: location, language }
+    })
+  }
 
+  const waText = encodeURIComponent(
+    `${language === "pt" ? "Olá, tenho interesse em:" : "Hi, I’d like info on:"} ${name} – R$${price}`
+  );
+  const waUrl = `https://wa.me/${WA_NUMBER}?text=${waText}`;
 
+  const images = item.gallery?.length
+    ? item.gallery
+    : item.image
+    ? [item.image]
+    : [];
+
+  return (
+    <div onClick={handleOpenModal}>
+    <Link
+      to="/details"
+      state={{ item }}
+      className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm"
+    >
+      {/* Carousel */}
+      <div className="service-image-container">
+        <Swiper
+          navigation
+          pagination={{ clickable: true }}
+          autoplay={{ delay: 3000 }}
+          loop
+        >
+          {images.length > 0
+            ? images.map((src, idx) => (
+                <SwiperSlide key={idx}>
+                  <img
+                    src={src}
+                    alt={`${name} ${idx + 1}`}
+                    className="w-full h-48 object-cover"
+                  />
+                </SwiperSlide>
+                
+              ))
+            : (
+                <SwiperSlide>
+                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                    <span className="text-4xl font-bold">
+                      {name.charAt(0)}
+                    </span>
+                  </div>
+                </SwiperSlide>
+              )}
+        </Swiper>
+      </div>
+      
+
+      {/* Conteúdo */}
+      <div className="service-content">
+        <div className="service-header">
+          <h3 className="service-title">
+            {name}
+          </h3>
+          <span className="rating-star">
+            ⭐ {item.rating}
+          </span>
+
+          <p className="text-sm text-gray-700 mb-4 ">
+            {description}
+          </p>
+
+          {item.hours && (
+            <p className="service-duration">
+              🕒 {item.hours}
+            </p>
+          )}
+          
+          <div className="service-price">
+            R${price}
+          </div>
+        </div>
+
+        {/* Botões */}
+        <div className="mt-4 flex space-x-2">
+          <button
+            type="button"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              addToCart(item);
+            }}
+            className="service-add-button bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          >
+            {language === "pt" ? "Adicionar ao Carrinho" : "Add to Cart"}
+          </button>
+
+          <button
+            type="button"
+            onClick={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              window.open(waUrl, "_blank", "noopener,noreferrer");
+            }}
+            className="service-whatsapp-button bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+          >
+            {language === "pt"
+              ? "Agendar via WhatsApp"
+              : "Schedule via WhatsApp"}
+          </button>
+        </div>
+      </div>
+    </Link>
+    </div>
+  );
+
+}
 const API_BASE = import.meta.env.VITE_BACKEND_URL || '/api';
 
-function CartPage({ cart, removeFromCart, updateQuantity }) {
+function CartPage({ cart, removeFromCart, updateQuantity}) {
   const { language } = useContext(LanguageContext)
   const navigate = useNavigate()
   const hasItems = cart.length > 0;
 
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0)
+  }
+
   // Calcular totais e moeda
   const getTotalPrice = () =>
   cart.reduce((sum, item) => {
-    const price =
-      typeof item.price === 'number'
-        ? item.price
-        : parseFloat(item.price) || 0
-    return sum + price * item.quantity
-  }, 0)
+    let price = 0;
+
+    if (typeof item.price === 'number') {
+      price = item.price;
+    } else if (typeof item.price === 'string') {
+      // remove qualquer caractere que não seja dígito, ponto ou hífen
+      price = parseFloat(item.price.replace(/[^0-9.-]+/g, '')) || 0;
+    }
+
+    return sum + price * item.quantity;
+  }, 0);
   const subtotal = getTotalPrice()
   const serviceFee = subtotal * 0.05
   const total = subtotal + serviceFee
@@ -745,7 +885,7 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
   // Estado do checkout e PaymentIntent
   const [step, setStep] = useState('form') // 'form' ou 'payment'
   const [clientSecret, setClientSecret] = useState(null)
-  const getTotalItems = () =>
+  
   cart.reduce((sum, item) => sum + item.quantity, 0)
 
 
@@ -833,6 +973,12 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
                 {getTotalItems()} {language === 'pt' ? 'itens' : 'items'}
               </div>
             </div>
+             <button 
+              onClick={() => navigate('/')}
+              className="continue-shopping-header-btn"
+            >
+              {language === 'pt' ? 'Continuar Comprando' : 'Continue Shopping'}
+            </button>
           </div>
         </div>
 
@@ -876,22 +1022,44 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
                 ))}
               </div>
             </div>
+            
 
-            <div className="cart-summary">
-              <div className="summary-item">
-                <span>{language === 'pt' ? 'Subtotal:' : 'Subtotal:'}</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="summary-item">
-                <span>
-                  {language === 'pt' ? 'Taxa de Serviço:' : 'Service Fee:'}
-                </span>
-                <span>${serviceFee.toFixed(2)}</span>
-              </div>
-              <div className="summary-total">
-                <span>{language === 'pt' ? 'Total:' : 'Total:'}</span>
-                <span>${total.toFixed(2)}</span>
-              </div>
+            <div className="order-summary-section">
+              <div className="order-summary">
+                <h2 className="order-summary-title">
+                  {language === 'pt' ? 'Resumo do Pedido' : 'Order Summary'}
+                </h2>
+                
+                <div className="order-summary-content">
+                  <div className="order-summary-row">
+                    <span className="order-summary-label">
+                      {language === 'pt' ? 'Subtotal' : 'Subtotal'}
+                    </span>
+                    <span className="order-summary-value">
+                      ${getTotalPrice().toFixed(2)}
+                    </span>
+                  </div>
+                  
+                  <div className="order-summary-row">
+                    <span className="order-summary-label">
+                      {language === 'pt' ? 'Taxa de Serviço' : 'Service Fee'}
+                    </span>
+                    <span className="order-summary-value">
+                      ${(getTotalPrice() * 0.05).toFixed(2)}
+                    </span>
+                  </div>
+                  
+                  <div className="order-summary-divider"></div>
+                  
+                  <div className="order-summary-row order-summary-total">
+                    <span className="order-summary-label">
+                      {language === 'pt' ? 'Total' : 'Total'}
+                    </span>
+                    <span className="order-summary-value">
+                      ${(getTotalPrice() * 1.05).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
 
               {step === 'form' && (
                 <div className="space-y-3">
@@ -953,140 +1121,108 @@ function CartPage({ cart, removeFromCart, updateQuantity }) {
               </button>
             </div>
           </div>
+          </div>
         )}
       </div>
     </main>
   );
 }
 
+// Cart Item Component
+function CartItem({ item, removeFromCart, updateQuantity, language }) {
+  const name = language === 'pt' ? item.name : item.name_en
+  const description = language === 'pt' ? item.description : item.description_en
 
-
-
-function ItemCard({ item, addToCart,removeFromCart,updateQuantity }) {
-  const { language } = useContext(LanguageContext);
-
-  const name = language === "pt" ? item.name : item.name_en;
-  const description =
-    language === "pt" ? item.description : item.description_en;
-  const price = item.price || "0.00";
-  const navigate = useNavigate()
-  const location = useLocation()
-  const id = item.id
-  const bg = location.pathname + location.search
-  const handleOpenModal = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    navigate(`/details/${item.id}`, {
-      state: { backgroundLocation: location, language }
-    })
-  }
-
-  const waText = encodeURIComponent(
-    `${language === "pt" ? "Olá, tenho interesse em:" : "Hi, I’d like info on:"} ${name} – R$${price}`
-  );
-  const waUrl = `https://wa.me/${WA_NUMBER}?text=${waText}`;
-
-  const images = item.gallery?.length
-    ? item.gallery
-    : item.image
-    ? [item.image]
-    : [];
+  // Normaliza item.price para string antes do replace, e garante que price seja número
+  const rawPrice = typeof item.price === 'number'
+    ? item.price
+    : item.price ?? '0'
+  const price = parseFloat(String(rawPrice).replace(/[^0-9.-]+/g, '')) || 0
 
   return (
-    <div onClick={handleOpenModal}>
-    <Link
-      to="/details"
-      state={{ item }}
-      className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm"
-    >
-      {/* Carousel */}
-      <div className="service-image-container">
-        <Swiper
-          navigation
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 3000 }}
-          loop
-        >
-          {images.length > 0
-            ? images.map((src, idx) => (
-                <SwiperSlide key={idx}>
-                  <img
-                    src={src}
-                    alt={`${name} ${idx + 1}`}
-                    className="w-full h-48 object-cover"
-                  />
-                </SwiperSlide>
-                
-              ))
-            : (
-                <SwiperSlide>
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                    <span className="text-4xl font-bold">
-                      {name.charAt(0)}
-                    </span>
-                  </div>
-                </SwiperSlide>
-              )}
-        </Swiper>
+    <div className="cart-item">
+      <div className="cart-item-image">
+         <img src={item.image} /> 
+        <span className="cart-item-placeholder-text">{name.charAt(0)}</span>
       </div>
-      
 
-      {/* Conteúdo */}
-      <div className="service-content flex-1 p-4 flex flex-col justify-between">
-        <div className="flex justify-between items-center mb-2">
-          <h3 className="service-title text-lg font-semibold">
-            {name}
-          </h3>
-          <span className="service-rating bg-yellow-400 text-white px-2 rounded">
-            ⭐ {item.rating}
-          </span>
-
-          <p className="text-sm text-gray-700 mb-4 ">
-            {description}
-          </p>
-          {item.hours && (
-            <p className="service-duration text-sm text-gray-600 mb-4">
-              🕒 {item.hours}
-            </p>
-          )}
-          <div className="service-price text-lg font-bold">
-            R${price}
+      <div className="cart-item-details">
+        <div className="cart-item-header">
+          <h3 className="cart-item-name">{name}</h3>
+          <div className="cart-item-rating">
+            <Star className="cart-item-star" />
+            <span className="cart-item-rating-value">{item.rating}</span>
           </div>
         </div>
 
-        {/* Botões */}
-        <div className="mt-4 flex space-x-2">
-          <button
-            type="button"
-            onClick={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              addToCart(item);
-            }}
-            className="service-add-button bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            {language === "pt" ? "Adicionar ao Carrinho" : "Add to Cart"}
-          </button>
-
-          <button
-            type="button"
-            onClick={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              window.open(waUrl, "_blank", "noopener,noreferrer");
-            }}
-            className="service-whatsapp-button bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-          >
-            {language === "pt"
-              ? "Agendar via WhatsApp"
-              : "Schedule via WhatsApp"}
-          </button>
+        <div className="cart-item-info">
+          <div className="cart-item-location">
+            <MapPin className="cart-item-location-icon" />
+            <span>{item.location}</span>
+          </div>
+          {item.hours && (
+            <div className="cart-item-hours">
+              <Clock className="cart-item-hours-icon" />
+              <span>{item.hours}</span>
+            </div>
+          )}
         </div>
-      </div>
-    </Link>
-    </div>
-  );
 
+        <p className="cart-item-description">{description}</p>
+
+        <div className="cart-item-footer">
+          <div className="cart-item-price">
+            <span className="cart-item-price-label">
+              {language === 'pt' ? 'Preço unitário:' : 'Unit price:'}
+            </span>
+            <span className="cart-item-price-value">${price.toFixed(2)}</span>
+          </div>
+
+          <div className="cart-item-actions">
+            <div className="quantity-controls">
+              <button 
+                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                className="quantity-btn quantity-btn-minus"
+                disabled={item.quantity <= 1}
+              >
+                -
+              </button>
+              <span className="quantity-display">{item.quantity}</span>
+              <button 
+                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                className="quantity-btn quantity-btn-plus"
+              >
+                +
+              </button>
+            </div>
+            
+            <button 
+              onClick={() => removeFromCart(item.id)}
+              className="remove-item-btn"
+              title={language === 'pt' ? 'Remover item' : 'Remove item'}
+            >
+              <X className="remove-item-icon" />
+            </button>
+          </div>
+        </div>
+
+        <div className="cart-item-total">
+          <span className="cart-item-total-label">
+            {language === 'pt' ? 'Subtotal:' : 'Subtotal:'}
+          </span>
+          <span className="cart-item-total-value">
+            ${(price * item.quantity).toFixed(2)}
+          </span>
+        </div>
+        
+      </div>
+    </div>
+  )
 }
+
+
+
+
+
 
 export default App

@@ -7,7 +7,7 @@ import restaurantsData from '../../data/restaurants.json'
 import themeParksData from '../../data/theme-parks.json'
 import { ShoppingCart } from 'lucide-react'
 
-const WA_NUMBER = '+1 407-635-6700' // substitua pelo seu número
+const WA_NUMBER = '+14076356700' // substitua pelo seu número
 
 export function DetailsPage({ addToCart, isModal = false }) {
   const navigate = useNavigate()

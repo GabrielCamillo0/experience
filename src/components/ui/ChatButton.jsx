@@ -3,7 +3,7 @@ import React from 'react'
 import { LifeBuoy } from 'lucide-react'
 
 // Seu número no formato internacional sem "+" nem espaços
-const WHATSAPP_NUMBER = '+1 407-635-6700'
+const WHATSAPP_NUMBER = '+14076356700'
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`
 
 export default function ChatButton() {

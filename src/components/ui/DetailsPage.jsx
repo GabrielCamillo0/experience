@@ -14,6 +14,9 @@ export function DetailsPage({ addToCart, isModal = false }) {
   const { id } = useParams()
   const location = useLocation()
   const stateItem = location.state?.item
+  
+
+  
 
   const backgroundLocation = location.state?.backgroundLocation
 
@@ -149,13 +152,21 @@ export function DetailsPage({ addToCart, isModal = false }) {
         {/* footer de ação */}
         <div className="details-footer">
           <div className="price-box">
-            {language === 'pt' ? 'Preço:' : 'Price:'} R${price}
+            ${price}
           </div>
           <div className="flex gap-2 flex-1">
+
+          
             <button
-              onClick={handleAddToCart}
+             type="button"
+             onClick={e => {
+               e.preventDefault();
+               e.stopPropagation();
+               if (typeof addToCart === 'function') {
+                addToCart(item);}
+             }}
               className="btn-addcart"
-              aria-label="Adicionar ao Carrinho"
+              
             >
               {language === 'pt' ? 'Adicionar ao Carrinho' : 'Add to Cart'} <ShoppingCart className="inline-block ml-1" size={18}/>
             </button>

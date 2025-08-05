@@ -151,7 +151,7 @@ function App() {
             />
             <Route 
             path="/details/:id" 
-            element={<DetailsPage isModal onClose={() => window.history.back()} />} 
+            element={<DetailsPage addToCart={addToCart} isModal onClose={() => window.history.back()} />} 
           />
           </Routes>
           
@@ -161,7 +161,7 @@ function App() {
       </Router>
       {console.log('ModalItem:', modalItem)}
         {modalItem && (
-          <DetailsModal item={modalItem} onClose={hideDetails} />
+          <DetailsModal item={modalItem} addToCart={addToCart} onClose={hideDetails} />
         )}
 
          <ChatButton />
@@ -273,7 +273,7 @@ function HomePage() {
       icon: '🍽️',
       title: language === 'pt' ? 'Comida e Bebidas' : 'Food & Drinks',
       description: language === 'pt' ? 'Restaurantes e experiências gastronômicas' : 'Restaurants and gastronomic experiences',
-      path: '/food-drinks'
+      path: '/restaurants'
     },
     {
       id: 'nightlife',
@@ -287,7 +287,7 @@ function HomePage() {
       icon: '🌟',
       title: language === 'pt' ? 'Além dos Parques' : 'Beyond Parks',
       description: language === 'pt' ? 'Museus, shopping, natureza e tours' : 'Museums, shopping, nature and tours',
-      path: '/beyond-parks'
+      path: '/tours'
     }
   ]
 
@@ -755,13 +755,15 @@ function ItemCard({ item, addToCart}) {
       to="/details"
       state={{ item }}
       className="modern-service-card flex flex-col border rounded-lg overflow-hidden shadow-sm"
+      
     >
-      {/* Carousel */}
+      </Link>
       <div className="service-image-container">
         <Swiper
+         modules={[Navigation, Pagination, Autoplay]}
           navigation
           pagination={{ clickable: true }}
-          autoplay={{ delay: 3000 }}
+          autoplay={{ delay: 5000 }}
           loop
         >
           {images.length > 0
@@ -835,7 +837,7 @@ function ItemCard({ item, addToCart}) {
               e.stopPropagation();
               window.open(waUrl, "_blank", "noopener,noreferrer");
             }}
-            className="service-whatsapp-button bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+            className="service-whatsapp-button"
           >
             {language === "pt"
               ? "Agendar via WhatsApp"
@@ -843,7 +845,7 @@ function ItemCard({ item, addToCart}) {
           </button>
         
       </div>
-    </Link>
+   
     </div>
   );
 

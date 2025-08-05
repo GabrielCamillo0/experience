@@ -1,5 +1,6 @@
 # backend-stripe/app.py
 import os, math, stripe, smtplib
+
 from email.message import EmailMessage
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -25,11 +26,17 @@ def send_order_email(form, amount, currency):
         f"Telefone: {form['phone']}\n"
         f"Total: {amount} {currency}\n"
     )
-    msg.set_content(body)
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
-        s.starttls()
-        s.login(SMTP_USER, SMTP_PASS)
-        s.send_message(msg)
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
+            s.set_debuglevel(1)            # ativa log detalhado
+            s.starttls()
+            s.login(SMTP_USER, SMTP_PASS)
+            response = s.send_message(msg)  # retorna dict de falhas, vazio = sucesso
+        print("Resposta do servidor SMTP:", response)
+        return True
+    except Exception as e:
+        print("Falha ao enviar e-mail:", e)
+        return False
 
 
 

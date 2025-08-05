@@ -1,3 +1,4 @@
+
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap");
 @tailwind base;
 @tailwind components;
@@ -2359,4 +2360,118 @@ body {
   background-color: gray;
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+modern-header {
+  @apply bg-gradient-to-br from-indigo-500 to-purple-600 backdrop-blur-lg
+         sticky top-0 z-50 shadow-lg border-b border-white/10;
+}
+.logo-text {
+  @apply text-2xl font-bold text-white font-poppins transition
+         hover:text-yellow-400 hover:scale-105;
+}
+.nav-menu {
+  @apply hidden md:flex items-center gap-8;
+}
+.nav-link {
+  @apply text-white/90 font-medium px-4 py-2 rounded relative transition
+         hover:text-white hover:bg-white/10 hover:-translate-y-0.5;
+}
+.nav-link::after {
+  content:''; @apply absolute bottom-0 left-1/2 w-0 h-0.5 bg-yellow-400
+               transition-all;
+  transform:translateX(-50%);
+}
+.nav-link:hover::after { @apply w-4/5; }
+.header-actions { @apply hidden md:flex items-center gap-4; }
+
+/* Hero */
+.hero-section-enhanced {
+  @apply relative flex items-center justify-center overflow-hidden
+         mt-0 -mx-4 mb-12 px-4 py-24 bg-gradient-to-br from-indigo-500 to-purple-600;
+}
+.hero-overlay {
+  @apply absolute inset-0 opacity-30;
+  background: url('data:image/svg+xml,...') center/cover no-repeat;
+}
+.hero-content {
+  @apply relative z-10 text-center max-w-xl px-6;
+}
+.hero-title {
+  @apply text-4xl sm:text-5xl font-bold font-poppins mb-6
+         bg-clip-text text-transparent bg-gradient-to-r
+         from-yellow-400 via-orange-500 to-red-700 animate-gradientShift;
+  line-height:1.2;
+}
+.hero-subtitle {
+  @apply text-lg text-white/90 mb-8 leading-relaxed;
+}
+.hero-button {
+  @apply relative inline-block px-8 py-3 font-semibold text-lg rounded-full
+         bg-gradient-to-br from-yellow-500 to-orange-600 text-black
+         shadow-lg overflow-hidden transition hover:-translate-y-1
+         hover:shadow-xl;
+}
+.hero-button::before {
+  content:''; @apply absolute top-0 left-[-100%] w-full h-full
+               bg-gradient-to-r from-transparent via-white/40 to-transparent
+               transition-left;
+}
+.hero-button:hover::before { left:100%; }
+
+/* Breakpoints */
+@screen md {
+  .hero-title { @apply text-5xl; }
+  .hero-section-enhanced { @apply py-32; }
+  .nav-menu { @apply flex; }
+  .header-actions { @apply flex; }
+}
+
+@keyframes gradientShift {
+  0%,100% { background-position:0% 50%; }
+  50% { background-position:100% 50%; }
+}
+
+/* Page Container */
+.page-container {
+  @apply max-w-5xl mx-auto bg-white rounded-xl shadow-md p-6 my-12;
+}
+.page-header { @apply text-center mb-8; }
+.page-title { @apply text-3xl font-bold font-poppins text-gray-800; }
+
+/* Search & Filter */
+.search-filters {
+  @apply flex flex-col sm:flex-row gap-4 justify-center items-center mb-8;
+}
+.search-input, .filter-select {
+  @apply w-full sm:w-auto min-w-[200px] px-4 py-2 border-2 border-gray-200
+         rounded-lg transition focus:outline-none focus:border-indigo-500
+         focus:shadow-outline;
+}
+
+/* Grid de Itens */
+.items-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+/* Card */
+.card-container {
+  @apply bg-white rounded-lg shadow-md p-6 border border-gray-100
+         transition hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Footer */
+.modern-footer {
+  @apply bg-gradient-to-br from-gray-800 to-gray-700 text-white py-12;
+}
+.footer-content {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6;
+}
+.footer-title { @apply text-xl font-bold font-poppins text-yellow-400 mb-4; }
+.footer-link { @apply block text-gray-300 hover:text-yellow-400 transition; }
+.footer-bottom { @apply border-t border-gray-600 mt-8 pt-6 text-center text-gray-400; }
+
+/* Responsividade adicional */
+@screen lg {
+  .page-container { @apply px-8 py-12; }
 }

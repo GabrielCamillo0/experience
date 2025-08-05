@@ -157,19 +157,7 @@ export function DetailsPage({ addToCart, isModal = false }) {
           <div className="flex gap-2 flex-1">
 
           
-            <button
-             type="button"
-             onClick={e => {
-               e.preventDefault();
-               e.stopPropagation();
-               if (typeof addToCart === 'function') {
-                addToCart(item);}
-             }}
-              className="btn-addcart"
-              
-            >
-              {language === 'pt' ? 'Adicionar ao Carrinho' : 'Add to Cart'} <ShoppingCart className="inline-block ml-1" size={18}/>
-            </button>
+          
             <button
               onClick={() => window.open(waUrl, '_blank', 'noopener,noreferrer')}
               className="btn-whatsapp"

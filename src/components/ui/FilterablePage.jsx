@@ -45,23 +45,23 @@ export default function FilterablePage({
 
   return (
     <main className="page-container">
-      <div className="page-header mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-        <h1 className="page-title text-2xl font-bold">
+      <div className="page-header">
+        <h1 className="page-title">
           {language === 'pt' ? titlePt : titleEn}
         </h1>
-        <div className="search-filters flex flex-col sm:flex-row gap-4 mt-4 md:mt-0">
+        <div className="search-filters">
           <input
             type="text"
             placeholder={language === 'pt' ? 'Buscar...' : 'Search...'}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            className="search-input border p-2 rounded flex-1"
+            className="search-input"
           />
           {filterKey && (
             <select
               value={selectedFilter}
               onChange={e => setSelectedFilter(e.target.value)}
-              className="filter-select border p-2 rounded"
+              className="filter-select"
             >
               <option value="">
                 {language === 'pt' ? filterLabelPt : filterLabelEn}
@@ -76,7 +76,7 @@ export default function FilterablePage({
         </div>
       </div>
 
-      <div className="items-grid grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="items-grid">
         {filteredData.map(item => (
           <ItemCard
             key={item.id}
@@ -88,7 +88,7 @@ export default function FilterablePage({
       </div>
 
       {filteredData.length === 0 && (
-        <div className="no-results text-center py-10 text-gray-600">
+        <div className="no-results">
           {language === 'pt'
             ? 'Nenhum resultado encontrado.'
             : 'No results found.'}

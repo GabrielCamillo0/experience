@@ -33,7 +33,7 @@ import beyondParksData from './data/beyond-parks.json'
 
 
 const stripePromise = loadStripe('pk_live_51Rj0y1L7b75eyCMpeUmRZv5XI71i6Pcnw02DOynfCnaAU4mYaakkEeuQmo76YE8EeY0CrGP5I9dByakfS3X3dr2V00blmzyW7t')
-const WA_NUMBER = '5511999998888';
+const WA_NUMBER = '+14076356700';
 
 
 
@@ -1038,7 +1038,7 @@ function CartPage({ cart, removeFromCart, updateQuantity}) {
                 </div>
 
               {step === 'form' && (
-                <div className="space-y-3">
+                <div className="checkout-form">
                   <input
                     type="text"
                     placeholder={language === 'pt' ? 'Nome' : 'Name'}
@@ -1069,7 +1069,7 @@ function CartPage({ cart, removeFromCart, updateQuantity}) {
                   <button
                     onClick={handleSendForm}
                     disabled={!isFormValid}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded disabled:opacity-50"
+                    className="checkout-form button"
                   >
                     {language === 'pt'
                       ? 'Prosseguir para pagamento'
@@ -1077,6 +1077,23 @@ function CartPage({ cart, removeFromCart, updateQuantity}) {
                   </button>
                 </div>
               )}
+
+              <button
+      type="button"
+      onClick={() => window.open(waCartUrl, "_blank")}
+      disabled={!hasItems}
+      className={`
+        whatsapp-button
+        ${hasItems 
+          ? "hover:bg-green-600" 
+          : "cursor-not-allowed opacity-50"
+        }
+      `}
+    >
+      {language === 'pt'
+        ? 'Enviar Pedido por WhatsApp'
+        : 'Submit request via WhatsApp'}
+    </button>
 
               {step === 'payment' && clientSecret && (
                 <Elements

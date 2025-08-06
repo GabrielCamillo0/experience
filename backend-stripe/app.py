@@ -87,7 +87,7 @@ def create_payment_intent():
         intent = stripe.PaymentIntent.create(
             amount=amount_in_cents,
             currency=currency,       
-            payment_method_types=payment_method_types,
+            
             automatic_payment_methods={"enabled": False},
             metadata={"origin": "experience-florida"},
         )

@@ -2419,10 +2419,10 @@ body {
 
   /* Galeria */
   .details-gallery {
-    width: 100%;
+    width: 80%;
   }
   .details-gallery-main img {
-    width: 100%;
+    width: 80%;
     height: auto;
     border-radius: 8px;
   }
@@ -2434,8 +2434,8 @@ body {
     -webkit-overflow-scrolling: touch;
   }
   .details-thumbs img {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     object-fit: cover;
     border-radius: 4px;
     opacity: 0.7;

@@ -79,7 +79,7 @@ def create_payment_intent():
         
         payment_method_types = [
          "card",
-         "boleto",          # BRL        
+              
          
         ]
 

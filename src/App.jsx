@@ -894,21 +894,30 @@ function CartPage({ cart, removeFromCart, updateQuantity}) {
 
   // Enviar formulário e criar PaymentIntent
   const handleSendForm = async () => {
-    if (!isFormValid) return
+    if (!isFormValid) return;
     try {
       const res = await fetch(`${API_BASE}/create-payment-intent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: Math.round(total * 100), currency: stripeCurrency, form })
-      })
-      const { clientSecret: cs } = await res.json()
-      setClientSecret(cs)
-      setStep('payment')
+        body: JSON.stringify({
+          amount: Math.round(total * 100),
+          currency: stripeCurrency,
+          form
+        })
+      });
+      const { clientSecret: cs } = await res.json();
+      setClientSecret(cs);
+      setStep('payment');
     } catch (err) {
-      console.error(err)
-      alert(language === 'pt' ? 'Erro ao processar seu pedido.' : 'Error processing your order.')
+      console.error(err);
+      alert(
+        language === 'pt'
+          ? 'Erro ao processar seu pedido.'
+          : 'Error processing your order.'
+      );
     }
-  }
+  };
+
   const waCartMessage = encodeURIComponent(
     (language==='pt'
       ? 'Olá, Quero fazer o agendamento para os seguintes locais:\n'
@@ -1067,6 +1076,7 @@ function CartPage({ cart, removeFromCart, updateQuantity}) {
                     className="w-full p-2 border rounded"
                   />
                   <button
+                  type="button"
                     onClick={handleSendForm}
                     disabled={!isFormValid}
                     className="checkout-form button"

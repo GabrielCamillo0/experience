@@ -77,18 +77,20 @@ def create_payment_intent():
         if amount_in_cents <= 0:
             return jsonify({"error": "amount deve ser > 0"}), 400
         
-        payment_method_types = [
-         "card",
-              
+       
+       
          
-        ]
+        
+
+
 
         # Cria o PaymentIntent
         intent = stripe.PaymentIntent.create(
             amount=amount_in_cents,
             currency=currency,       
             
-            automatic_payment_methods={"enabled": False},
+            
+            
             metadata={"origin": "experience-florida"},
         )
 

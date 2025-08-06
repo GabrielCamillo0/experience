@@ -2458,3 +2458,64 @@ body {
     width: 100%;
   }
 }
+
+/* Responsive Cart Header */
+@media (max-width: 768px) {
+  .cart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .cart-header-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .cart-title {
+    font-size: 2rem;
+  }
+  .continue-shopping-header-btn {
+    align-self: flex-end;
+  }
+}
+
+/* Make the nav‐menu horizontally scrollable on small screens */
+.nav-menu {
+  display: flex;
+  gap: 1rem;
+}
+@media (max-width: 768px) {
+  .nav-menu {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 0;
+  }
+  .nav-menu::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-link {
+    flex: 0 0 auto;
+    padding: 0.5rem 1rem;
+  }
+}
+
+
+.nav-toggle {
+  display: none;
+}
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    cursor: pointer;
+  }
+  .nav-menu.collapsed {
+    display: none;
+  }
+}

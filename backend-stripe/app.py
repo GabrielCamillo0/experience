@@ -81,14 +81,7 @@ def create_payment_intent():
          "card",
         
        
-        # Wallets
-        
-        
-        "apple_pay",
-        "google_pay",
-        
-        
-        "link",
+       
         
               
          

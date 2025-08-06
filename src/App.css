@@ -2420,3 +2420,41 @@ body {
     flex-direction: column;
   }
 }
+@media (max-width: 768px) {
+  .cart-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cart-item-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .cart-item-image img {
+    height: auto;
+  }
+
+  .cart-item-placeholder-text {
+    font-size: 2.5rem;
+  }
+
+  .cart-item-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cart-item-footer {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cart-item-actions {
+    justify-content: center;
+  }
+
+  .cart-item-total {
+    width: 100%;
+  }
+}

@@ -79,41 +79,17 @@ def create_payment_intent():
         
         payment_method_types = [
          "card",
-        "cartes_bancaires",
-        "korean_card",
+        
+       
         # Wallets
-        "alipay",
-        "wechat_pay",
+        
+        
         "apple_pay",
         "google_pay",
-        "samsung_pay",
-        "kakaopay",
+        
+        
         "link",
-        "nordic_bank_debit",      # ex: “Bank transfer” na UE
-        "multibanco",
-        "bancontact",
-        "eps",
-        "giropay",
-        "ideal",
-        "przelewy24",
-        "sofort",
-        "affirm",
-        "afterpay_clearpay",
-        "klarna",
-        # Débitos diretos
-        "sepa_debit",
-        "ach_debit",
-        "bacs_debit",
-        # Pix / Boleto
-        "pix",
-        "boleto",
-        # Outros
-        "cashapp",
-        "amazon_pay",
-        "paynow",
-        "wechat_pay",
-        "us_bank_account",        # Stripe ACH
-        "wechat_pay"
+        
               
          
         ]
